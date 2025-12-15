@@ -19,7 +19,7 @@ export default function Header() {
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2 md:gap-4">
           <a href="https://geology.utah.gov/water/wetlands/" target="_blank" rel="noopener noreferrer">
-            <img src="/images/ugs_logo_large.png" alt="UGS Logo" className="h-8 md:h-10" />
+            <img src={`${import.meta.env.BASE_URL}images/ugs_logo_large.png`} alt="UGS Logo" className="h-8 md:h-10" />
           </a>
           <div className="text-base md:text-xl font-bold">
             Utah Wetland Data Explorer

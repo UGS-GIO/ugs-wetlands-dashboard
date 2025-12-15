@@ -86,7 +86,7 @@ function Home() {
 
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src="/images/bda_strawberry.jpg"
+            src={`${import.meta.env.BASE_URL}images/bda_strawberry.jpg`}
             alt="Beaver Dam Analog and wetland near Strawberry Reservoir"
             className="w-full h-auto max-h-96 object-cover rounded-xl shadow-lg"
           />
@@ -107,7 +107,7 @@ function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src="/images/uwam_crew.jpg"
+            src={`${import.meta.env.BASE_URL}images/uwam_crew.jpg`}
             alt="UGS ecologists monitoring a wetland in Beaver County"
             className="w-full h-auto object-contain rounded-xl shadow-lg"
           />

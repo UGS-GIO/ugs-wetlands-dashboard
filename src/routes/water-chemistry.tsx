@@ -174,7 +174,7 @@ function WaterChemistry() {
 
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src="/images/wetland_water.jpg"
+            src={`${import.meta.env.BASE_URL}images/wetland_water.jpg`}
             alt="Surface of a wetland with submerged aquatic vegetation"
             className="w-full h-auto max-h-96 object-cover rounded-xl shadow-lg"
           />
