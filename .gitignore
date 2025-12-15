@@ -1,0 +1,20 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+count.txt
+.env
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+todos.json
+.playwright-mcp
+
+# Auto-generated
+src/routeTree.gen.ts
+
+# Local config
+CLAUDE.md
