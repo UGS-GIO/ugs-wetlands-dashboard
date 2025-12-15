@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import Histogram from '../components/charts/histogram'
 import Boxplot from '../components/charts/boxplot'
 import WaterMap from '../components/maps/water-map'
@@ -97,23 +98,19 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
 }
 
 export const Route = createFileRoute('/water-chemistry')({
-  loader: async ({ context: { queryClient } }) => {
-    const [waterRecords, paramsData, sitesData] = await Promise.all([
-      queryClient.ensureQueryData(waterRecordsQueryOptions),
-      queryClient.ensureQueryData(waterParamsQueryOptions),
-      queryClient.ensureQueryData(siteAttributesQueryOptions),
-    ])
-
-    const waterParams = transformWaterParams(paramsData)
-    const waterData = transformWaterData(waterRecords, waterParams, sitesData)
-
-    return { waterData, waterParams }
-  },
   component: WaterChemistry,
 })
 
 function WaterChemistry() {
-  const { waterData, waterParams } = Route.useLoaderData()
+  const { data: waterRecords } = useSuspenseQuery(waterRecordsQueryOptions)
+  const { data: paramsData } = useSuspenseQuery(waterParamsQueryOptions)
+  const { data: sitesData } = useSuspenseQuery(siteAttributesQueryOptions)
+
+  const { waterData, waterParams } = useMemo(() => {
+    const waterParams = transformWaterParams(paramsData)
+    const waterData = transformWaterData(waterRecords, waterParams, sitesData)
+    return { waterData, waterParams }
+  }, [waterRecords, paramsData, sitesData])
 
   const [category, setCategory] = useState<keyof typeof CATEGORY_OPTIONS>('genchem')
   const [parameter, setParameter] = useState<string>('Electrical Conductivity')
