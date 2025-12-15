@@ -20,6 +20,7 @@ export const createQueryClient = () =>
 export const createAppRouter = (queryClient: QueryClient) =>
   createRouter({
     routeTree,
+    basepath: import.meta.env.BASE_URL,
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     context: {
