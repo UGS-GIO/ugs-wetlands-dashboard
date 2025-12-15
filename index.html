@@ -6,17 +6,6 @@
     <title>Utah Wetland Data Explorer</title>
     <link rel="icon" href="/favicon.ico" type="image/png" />
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.css" />
-    <!-- GitHub Pages SPA redirect handler -->
-    <script>
-      (function(l) {
-        if (l.search[1] === '/') {
-          var decoded = l.search.slice(1).split('&').map(function(s) {
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
-        }
-      }(window.location))
-    </script>
   </head>
   <body>
     <div id="root"></div>
