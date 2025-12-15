@@ -56,10 +56,10 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
 
     // Get container dimensions
     const containerWidth = containerRef.current.offsetWidth
-    const containerHeight = 400
+    const containerHeight = 450
 
     // Dimensions
-    const margin = { top: 20, right: 20, bottom: 100, left: 80 }
+    const margin = { top: 30, right: 30, bottom: 60, left: 80 }
     const width = containerWidth - margin.left - margin.right
     const height = containerHeight - margin.top - margin.bottom
 
