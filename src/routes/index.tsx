@@ -224,6 +224,6 @@ function ValueBox({ value, label, icon }: { value: string; label: string; icon: 
       <div className="text-3xl mb-2">{icon}</div>
       <div className="text-4xl font-bold text-primary">{value}</div>
       <div className="text-base text-muted-foreground mt-2">{label}</div>
-claud    </div>
+    </div>
   )
 }
