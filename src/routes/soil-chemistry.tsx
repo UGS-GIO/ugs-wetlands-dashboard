@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import Histogram from '../components/charts/histogram'
 import Boxplot from '../components/charts/boxplot'
 import SoilMap from '../components/maps/soil-map'
@@ -91,22 +92,18 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
 }
 
 export const Route = createFileRoute('/soil-chemistry')({
-  loader: async ({ context: { queryClient } }) => {
-    const [soilRecords, paramsData, sitesData] = await Promise.all([
-      queryClient.ensureQueryData(soilRecordsQueryOptions),
-      queryClient.ensureQueryData(soilParamsQueryOptions),
-      queryClient.ensureQueryData(siteAttributesQueryOptions),
-    ])
-
-    const soilData = transformSoilData(soilRecords, paramsData, sitesData)
-
-    return { soilData, soilParams: paramsData }
-  },
   component: SoilChemistry,
 })
 
 function SoilChemistry() {
-  const { soilData, soilParams } = Route.useLoaderData()
+  const { data: soilRecords } = useSuspenseQuery(soilRecordsQueryOptions)
+  const { data: soilParams } = useSuspenseQuery(soilParamsQueryOptions)
+  const { data: sitesData } = useSuspenseQuery(siteAttributesQueryOptions)
+
+  const soilData = useMemo(
+    () => transformSoilData(soilRecords, soilParams, sitesData),
+    [soilRecords, soilParams, sitesData]
+  )
 
   const [category, setCategory] = useState<keyof typeof CATEGORY_OPTIONS>('gennuts')
   const [parameter, setParameter] = useState<string>('nh4n_s')

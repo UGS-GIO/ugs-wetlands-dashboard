@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import Histogram from '../components/charts/histogram'
 import Boxplot from '../components/charts/boxplot'
 import SoilMap from '../components/maps/soil-map'
@@ -50,21 +51,19 @@ const PARAMETER_UNITS: Record<string, string> = {
 }
 
 export const Route = createFileRoute('/macroinvertebrates')({
-  loader: async ({ context: { queryClient } }) => {
-    const [invertsData, taxonData, sitesData, flagsData] = await Promise.all([
-      queryClient.ensureQueryData(invertRecordsQueryOptions),
-      queryClient.ensureQueryData(invertTaxaQueryOptions),
-      queryClient.ensureQueryData(siteAttributesQueryOptions),
-      queryClient.ensureQueryData(flagsQueryOptions),
-    ])
-
-    return transformInvertData(invertsData, taxonData, sitesData, flagsData)
-  },
   component: Macroinvertebrates,
 })
 
 function Macroinvertebrates() {
-  const { invertMetrics, communityData } = Route.useLoaderData()
+  const { data: invertsData } = useSuspenseQuery(invertRecordsQueryOptions)
+  const { data: taxonData } = useSuspenseQuery(invertTaxaQueryOptions)
+  const { data: sitesData } = useSuspenseQuery(siteAttributesQueryOptions)
+  const { data: flagsData } = useSuspenseQuery(flagsQueryOptions)
+
+  const { invertMetrics, communityData } = useMemo(
+    () => transformInvertData(invertsData, taxonData, sitesData, flagsData),
+    [invertsData, taxonData, sitesData, flagsData]
+  )
 
   const [parameter, setParameter] = useState<keyof typeof PARAMETER_OPTIONS>('abundance')
   const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
