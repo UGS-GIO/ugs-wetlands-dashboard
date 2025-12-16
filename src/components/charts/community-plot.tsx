@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import { BRBG_11, CHART_STYLES } from '../../utils/colors'
 import { useTheme } from '../../context/theme-provider'
+import { useContainerWidth } from '../../hooks/useContainerWidth'
 
 // Theme-aware chart colors
 const CHART_COLORS = {
@@ -37,6 +38,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
+  const containerWidth = useContainerWidth(containerRef)
   const [tooltip, setTooltip] = useState<{
     visible: boolean
     x: number
@@ -45,7 +47,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
   }>({ visible: false, x: 0, y: 0, content: '' })
 
   useEffect(() => {
-    if (!svgRef.current || !containerRef.current || data.length === 0) return
+    if (!svgRef.current || !containerRef.current || data.length === 0 || containerWidth === 0) return
 
     // Get theme-aware colors based on current theme
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -57,8 +59,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    // Get container dimensions
-    const containerWidth = containerRef.current.offsetWidth
+    // Get container dimensions (containerWidth comes from useContainerWidth hook)
     const containerHeight = 450
 
     // Dimensions
@@ -265,7 +266,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
       .attr('fill', chartCaption)
       .attr('font-size', '10px')
       .text(`Mean relative abundance of ${metric.toLowerCase()} across ${groupBy}`)
-  }, [data, groupBy, metric, theme])
+  }, [data, groupBy, metric, theme, containerWidth])
 
   if (data.length === 0) {
     return (

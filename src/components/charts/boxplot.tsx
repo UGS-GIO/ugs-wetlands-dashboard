@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import { getPuOrPalette, CHART_STYLES } from '../../utils/colors'
 import { useTheme } from '../../context/theme-provider'
+import { useContainerWidth } from '../../hooks/useContainerWidth'
 
 // Theme-aware chart colors
 const CHART_COLORS = {
@@ -34,6 +35,7 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
+  const containerWidth = useContainerWidth(containerRef)
   const [tooltip, setTooltip] = useState<{
     visible: boolean
     x: number
@@ -42,7 +44,7 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
   }>({ visible: false, x: 0, y: 0, content: '' })
 
   useEffect(() => {
-    if (!svgRef.current || !containerRef.current || data.length === 0) return
+    if (!svgRef.current || !containerRef.current || data.length === 0 || containerWidth === 0) return
 
     // Get theme-aware colors based on current theme
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -54,8 +56,7 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    // Get container dimensions
-    const containerWidth = containerRef.current.offsetWidth
+    // Get container dimensions (containerWidth comes from ResizeObserver state)
     const containerHeight = 450
 
     // Dimensions
@@ -314,7 +315,7 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
       .attr('fill', chartCaption)
       .attr('font-size', '10px')
       .text(`Boxplot (25-75th percentile) of ${parameter} across ${groupBy}s`)
-  }, [data, groupBy, parameter, units, hlineValue, theme])
+  }, [data, groupBy, parameter, units, hlineValue, theme, containerWidth])
 
   return (
     <div ref={containerRef} style={{ width: '100%', position: 'relative' }}>

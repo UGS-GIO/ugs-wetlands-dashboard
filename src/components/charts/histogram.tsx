@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import { getPuOrPalette, CHART_STYLES } from '../../utils/colors'
 import { useTheme } from '../../context/theme-provider'
+import { useContainerWidth } from '../../hooks/useContainerWidth'
 
 interface DataPoint {
   value: number
@@ -46,30 +47,13 @@ export default function Histogram({
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
-  const [containerWidth, setContainerWidth] = useState(0)
+  const containerWidth = useContainerWidth(containerRef)
   const [tooltip, setTooltip] = useState<{
     visible: boolean
     x: number
     y: number
     content: string
   }>({ visible: false, x: 0, y: 0, content: '' })
-
-  // Track container size changes for responsive resizing
-  useEffect(() => {
-    if (!containerRef.current) return
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setContainerWidth(entry.contentRect.width)
-      }
-    })
-
-    resizeObserver.observe(containerRef.current)
-    // Set initial width
-    setContainerWidth(containerRef.current.offsetWidth)
-
-    return () => resizeObserver.disconnect()
-  }, [])
 
   useEffect(() => {
     if (!svgRef.current || !containerRef.current || data.length === 0 || containerWidth === 0) return
