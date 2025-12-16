@@ -82,15 +82,20 @@ function filterSites(sites: SiteAttribute[]): SiteAttribute[] {
 
 /**
  * Add site attributes to a record
+ * Returns null if site not found or lacks coordinates (matching R Shiny's filter behavior)
  */
 function addSiteAttributes(siteid: string, sites: SiteAttribute[]) {
   const site = sites.find((s) => s.siteid === siteid)
+  // Filter out records without valid lat/lon (matching R Shiny's add_spatial_geometry)
+  if (!site || site.latitude == null || site.longitude == null) {
+    return null
+  }
   return {
-    latitude: site?.latitude,
-    longitude: site?.longitude,
-    ecoregion: site?.ecoregion,
-    Watershed: classifyHuc(site?.huc8),
-    'Wetland Type': classifyWetland(site?.sysclass),
+    latitude: site.latitude,
+    longitude: site.longitude,
+    ecoregion: site.ecoregion,
+    Watershed: classifyHuc(site.huc8),
+    'Wetland Type': classifyWetland(site.sysclass),
   }
 }
 
@@ -132,6 +137,10 @@ export function transformWaterData(
       const param = params.find((p) => p.parameter === w.parameter)
       if (!param) return null
 
+      // Get site attributes - returns null if site not found or lacks coordinates
+      const siteAttrs = addSiteAttributes(w.siteid, filteredSites)
+      if (!siteAttrs) return null
+
       const fraction = w.parameter.endsWith('_t')
         ? 'unfiltered'
         : w.parameter.endsWith('_d')
@@ -145,7 +154,7 @@ export function transformWaterData(
         category: param.category || '',
         acute: param.acute,
         chronic: param.chronic,
-        ...addSiteAttributes(w.siteid, filteredSites),
+        ...siteAttrs,
         fraction,
       }
       return result
@@ -171,6 +180,10 @@ export function transformSoilData(
       const param = params.find((p) => p.parameter === s.parameter)
       if (!param) return null
 
+      // Get site attributes - returns null if site not found or lacks coordinates
+      const siteAttrs = addSiteAttributes(s.siteid, filteredSites)
+      if (!siteAttrs) return null
+
       // Determine category
       let category = 'other'
       if (SOIL_GENNUTS_PARAMS.includes(s.parameter)) category = 'gennuts'
@@ -181,7 +194,7 @@ export function transformSoilData(
         units: param.units || '',
         label: param.label || '',
         category,
-        ...addSiteAttributes(s.siteid, filteredSites),
+        ...siteAttrs,
       }
       return result
     })
@@ -199,7 +212,14 @@ export function transformInvertData(
 ): { invertMetrics: InvertMetric[]; communityData: CommunityData[] } {
   const filteredSites = filterSites(sites)
 
-  // Filter out flagged records (vertebrates) and equipment blanks
+  // Pre-compute valid site IDs (sites with coordinates) for filtering
+  const validSiteIds = new Set(
+    filteredSites
+      .filter((s) => s.latitude != null && s.longitude != null)
+      .map((s) => s.siteid)
+  )
+
+  // Filter out flagged records (vertebrates), equipment blanks, and sites without coordinates
   const flaggedIds = new Set(flags.map((f) => f.site_param))
   const inverts = records.filter(
     (i) =>
@@ -207,7 +227,8 @@ export function transformInvertData(
       i?.taxon &&
       typeof i.abundance === 'number' &&
       !flaggedIds.has(i.site_taxa) &&
-      !i.siteid.includes('_blank_')
+      !i.siteid.includes('_blank_') &&
+      validSiteIds.has(i.siteid)
   )
 
   // Create taxon lookup
@@ -230,12 +251,15 @@ export function transformInvertData(
     }
   })
 
-  // Create metrics array
+  // Create metrics array (only for sites with valid coordinates)
   const invertMetrics: InvertMetric[] = []
   Object.entries(siteData).forEach(([siteid, data]) => {
+    const siteAttrs = addSiteAttributes(siteid, filteredSites)
+    if (!siteAttrs) return // Skip sites without valid coordinates
+
     const baseData = {
       siteid,
-      ...addSiteAttributes(siteid, filteredSites),
+      ...siteAttrs,
     }
 
     invertMetrics.push({
@@ -287,6 +311,9 @@ export function transformInvertData(
     })
 
     Object.entries(siteGroups).forEach(([siteid, groups]) => {
+      const siteAttrs = addSiteAttributes(siteid, filteredSites)
+      if (!siteAttrs) return // Skip sites without valid coordinates
+
       const total = Object.values(groups).reduce((a, b) => a + b, 0)
 
       Object.entries(groups).forEach(([group, count]) => {
@@ -295,7 +322,7 @@ export function transformInvertData(
           parameter: paramName,
           group,
           rel_abnd: total > 0 ? Math.round((count / total) * 10000) / 100 : 0,
-          ...addSiteAttributes(siteid, filteredSites),
+          ...siteAttrs,
         })
       })
     })
@@ -319,13 +346,16 @@ export function transformInvertData(
 
   const consolidatedBugTypes: CommunityData[] = []
   Object.entries(siteConsolidated).forEach(([siteid, groups]) => {
+    const siteAttrs = addSiteAttributes(siteid, filteredSites)
+    if (!siteAttrs) return // Skip sites without valid coordinates
+
     Object.entries(groups).forEach(([group, rel_abnd]) => {
       consolidatedBugTypes.push({
         siteid,
         parameter: 'bug_type',
         group,
         rel_abnd,
-        ...addSiteAttributes(siteid, filteredSites),
+        ...siteAttrs,
       })
     })
   })

@@ -46,6 +46,7 @@ export default function Histogram({
   const svgRef = useRef<SVGSVGElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
+  const [containerWidth, setContainerWidth] = useState(0)
   const [tooltip, setTooltip] = useState<{
     visible: boolean
     x: number
@@ -53,8 +54,25 @@ export default function Histogram({
     content: string
   }>({ visible: false, x: 0, y: 0, content: '' })
 
+  // Track container size changes for responsive resizing
   useEffect(() => {
-    if (!svgRef.current || !containerRef.current || data.length === 0) return
+    if (!containerRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width)
+      }
+    })
+
+    resizeObserver.observe(containerRef.current)
+    // Set initial width
+    setContainerWidth(containerRef.current.offsetWidth)
+
+    return () => resizeObserver.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!svgRef.current || !containerRef.current || data.length === 0 || containerWidth === 0) return
 
     // Get theme-aware colors based on current theme
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -67,8 +85,7 @@ export default function Histogram({
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    // Get container dimensions
-    const containerWidth = containerRef.current.offsetWidth
+    // Get container dimensions (containerWidth comes from ResizeObserver state)
     const containerHeight = facetBy ? 450 : 400
 
     // Determine facets
@@ -134,11 +151,17 @@ export default function Histogram({
           .text(label)
       }
 
+      // Create exactly 10 bins (matching ggplot2's bins = 10)
+      // D3's .thresholds(10) is just a suggestion, so we compute exact boundaries
+      const binCount = 10
+      const binWidth = (yMax - yMin) / binCount
+      const binThresholds = d3.range(yMin, yMax, binWidth)
+
       const histogram = d3
         .histogram<DataPoint, number>()
         .value((d) => d.value)
         .domain([yMin, yMax])
-        .thresholds(10)
+        .thresholds(binThresholds)
 
       // Create bins for each group within this facet
       const groupedData = groups.map((group) => ({
@@ -308,7 +331,7 @@ export default function Histogram({
       .attr('font-size', '10px')
       .style('max-width', '400px')
       .text(`Distribution of ${parameter} observations shaded by ${groupBy}`)
-  }, [data, groupBy, parameter, units, vlineValue, facetBy, facetLabels, theme])
+  }, [data, groupBy, parameter, units, vlineValue, facetBy, facetLabels, theme, containerWidth])
 
   return (
     <div ref={containerRef} style={{ width: '100%', position: 'relative' }}>
