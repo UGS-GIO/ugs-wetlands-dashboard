@@ -56,7 +56,6 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    // Get container dimensions (containerWidth comes from ResizeObserver state)
     const containerHeight = 450
 
     // Dimensions

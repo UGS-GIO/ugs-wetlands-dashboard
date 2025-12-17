@@ -59,7 +59,6 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    // Get container dimensions (containerWidth comes from useContainerWidth hook)
     const containerHeight = 450
 
     // Dimensions

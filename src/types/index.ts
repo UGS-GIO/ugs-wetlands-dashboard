@@ -40,6 +40,14 @@ export interface WaterData extends WithSiteAttributes {
   acute?: number
   chronic?: number
   fraction: 'filtered' | 'unfiltered'
+  isOutlier?: boolean
+  definition?: string
+  mdl?: number
+  lrl?: number
+  method?: string
+  huc_name?: string
+  project?: string
+  name?: string
 }
 
 export interface WaterParamWithCriteria {
@@ -50,6 +58,9 @@ export interface WaterParamWithCriteria {
   label: string
   acute?: number
   chronic?: number
+  mdl?: number
+  lrl?: number
+  method?: string
 }
 
 // Soil Chemistry types
@@ -61,6 +72,10 @@ export interface SoilData extends WithSiteAttributes {
   units: string
   label: string
   category: string
+  definition?: string
+  huc_name?: string
+  project?: string
+  name?: string
 }
 
 // Macroinvertebrate types

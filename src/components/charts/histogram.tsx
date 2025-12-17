@@ -69,7 +69,6 @@ export default function Histogram({
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    // Get container dimensions (containerWidth comes from ResizeObserver state)
     const containerHeight = facetBy ? 450 : 400
 
     // Determine facets

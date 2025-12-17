@@ -30,11 +30,11 @@ const CATEGORY_OPTIONS = {
   metal: 'Metal(oids)',
 }
 
-// Download dropdown uses "Toxics" instead of "Metal(oids)" to match R Shiny app
+// Download dropdown uses "Toxics" to match R Shiny app (category in DB is 'toxic')
 const DOWNLOAD_GROUP_OPTIONS = {
   genchem: 'General Chemistry',
   nuts: 'Nutrients',
-  metal: 'Toxics',
+  toxic: 'Toxics',
 }
 
 // Map category selections to parameter labels (matching Shiny app)
@@ -126,6 +126,10 @@ function WaterChemistry() {
 
   // Filter data based on selected parameter
   const filteredData = waterData.filter((d) => d.label === parameter)
+
+  // Filter out outliers for visualization (matching R Shiny behavior)
+  // Outliers are still included in downloads
+  const chartData = filteredData.filter((d) => !d.isOutlier)
 
   // Get parameter metadata
   const paramMeta = waterParams.find((p) => p.label === parameter)
@@ -257,7 +261,7 @@ function WaterChemistry() {
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
         <h3 className="text-xl font-bold text-primary mb-2">Spatial Patterns</h3>
-        <WaterMap data={filteredData} parameter={parameter} units={paramMeta?.units || ''} />
+        <WaterMap data={chartData} parameter={parameter} units={paramMeta?.units || ''} />
       </div>
 
       {/* Charts */}
@@ -265,7 +269,7 @@ function WaterChemistry() {
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-primary mb-2">Parameter Distribution</h3>
           <Histogram
-            data={filteredData}
+            data={chartData}
             groupBy={grouping}
             parameter={parameter}
             units={paramMeta?.units || ''}
@@ -278,7 +282,7 @@ function WaterChemistry() {
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-primary mb-2">Group Comparison</h3>
           <Boxplot
-            data={filteredData}
+            data={chartData}
             groupBy={grouping}
             parameter={parameter}
             units={paramMeta?.units || ''}
@@ -291,7 +295,7 @@ function WaterChemistry() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-primary mb-2">Summary Statistics</h3>
-          <SummaryTable data={filteredData} groupBy={grouping} units={paramMeta?.units || ''} />
+          <SummaryTable data={chartData} groupBy={grouping} units={paramMeta?.units || ''} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
@@ -340,17 +344,24 @@ function WaterChemistry() {
         onAccept={() => {
           setShowDisclaimer(false)
           const downloadData = waterData.filter((d) => downloadGroups.includes(d.category as keyof typeof DOWNLOAD_GROUP_OPTIONS))
-          const headers = ['siteid', 'parameter', 'value', 'units', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'latitude', 'longitude']
+          const headers = ['siteid', 'parameter', 'value', 'units', 'definition', 'mdl', 'lrl', 'method', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'huc_name', 'project', 'name', 'latitude', 'longitude']
           downloadCSV(downloadData, `water-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
             switch (key) {
               case 'siteid': return row.siteid
               case 'parameter': return row.parameter
               case 'value': return row.value
               case 'units': return row.units
+              case 'definition': return row.definition
+              case 'mdl': return row.mdl
+              case 'lrl': return row.lrl
+              case 'method': return row.method
               case 'category': return row.category
               case 'Watershed': return row.Watershed
               case 'ecoregion': return row.ecoregion
               case 'Wetland Type': return row['Wetland Type']
+              case 'huc_name': return row.huc_name
+              case 'project': return row.project
+              case 'name': return row.name
               case 'latitude': return row.latitude
               case 'longitude': return row.longitude
               default: return undefined

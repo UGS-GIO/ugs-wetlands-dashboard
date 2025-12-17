@@ -96,6 +96,9 @@ function addSiteAttributes(siteid: string, sites: SiteAttribute[]) {
     ecoregion: site.ecoregion,
     Watershed: classifyHuc(site.huc8),
     'Wetland Type': classifyWetland(site.sysclass),
+    huc_name: site.huc_name,
+    project: site.project,
+    name: site.name,
   }
 }
 
@@ -115,12 +118,16 @@ export function transformWaterParams(params: WaterParam[]): WaterParamWithCriter
       label,
       acute: WQ_CRITERIA[p.parameter]?.acute,
       chronic: WQ_CRITERIA[p.parameter]?.chronic,
+      mdl: p.mdl,
+      lrl: p.lrl,
+      method: p.method,
     }
   })
 }
 
 /**
  * Transform raw water records into enriched water data
+ * Marks outliers (z-score > 3) for visualization filtering (matching R Shiny)
  */
 export function transformWaterData(
   records: WaterRecord[],
@@ -129,7 +136,8 @@ export function transformWaterData(
 ): WaterData[] {
   const filteredSites = filterSites(sites)
 
-  return records
+  // First pass: transform all records
+  const transformed = records
     .map((w) => {
       if (!w?.parameter || !w?.siteid || typeof w.value !== 'number') return null
       if (w.siteid.includes('_blank_')) return null
@@ -154,12 +162,45 @@ export function transformWaterData(
         category: param.category || '',
         acute: param.acute,
         chronic: param.chronic,
+        definition: param.definition,
+        mdl: param.mdl,
+        lrl: param.lrl,
+        method: param.method,
         ...siteAttrs,
         fraction,
+        isOutlier: false,
       }
       return result
     })
     .filter((w): w is WaterData => w !== null && !isNaN(w.value))
+
+  // Second pass: calculate z-scores per parameter and mark outliers (z > 3)
+  // Group by parameter to calculate mean and std dev
+  const paramStats: Record<string, { mean: number; std: number }> = {}
+  const paramValues: Record<string, number[]> = {}
+
+  transformed.forEach((w) => {
+    if (!paramValues[w.parameter]) paramValues[w.parameter] = []
+    paramValues[w.parameter].push(w.value)
+  })
+
+  Object.entries(paramValues).forEach(([param, values]) => {
+    const mean = values.reduce((a, b) => a + b, 0) / values.length
+    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length
+    const std = Math.sqrt(variance)
+    paramStats[param] = { mean, std }
+  })
+
+  // Mark outliers where z-score > 3
+  transformed.forEach((w) => {
+    const stats = paramStats[w.parameter]
+    if (stats && stats.std > 0) {
+      const zScore = Math.abs((w.value - stats.mean) / stats.std)
+      w.isOutlier = zScore > 3
+    }
+  })
+
+  return transformed
 }
 
 /**
@@ -194,6 +235,7 @@ export function transformSoilData(
         units: param.units || '',
         label: param.label || '',
         category,
+        definition: param.definition,
         ...siteAttrs,
       }
       return result

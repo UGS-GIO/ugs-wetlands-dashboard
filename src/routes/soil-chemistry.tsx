@@ -313,17 +313,21 @@ function SoilChemistry() {
         onAccept={() => {
           setShowDisclaimer(false)
           const downloadData = soilData.filter((d) => downloadGroups.includes(d.category as keyof typeof DOWNLOAD_GROUP_OPTIONS))
-          const headers = ['siteid', 'parameter', 'value', 'units', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'latitude', 'longitude']
+          const headers = ['siteid', 'parameter', 'value', 'units', 'definition', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'huc_name', 'project', 'name', 'latitude', 'longitude']
           downloadCSV(downloadData, `soil-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
             switch (key) {
               case 'siteid': return row.siteid
               case 'parameter': return row.parameter
               case 'value': return row.value
               case 'units': return row.units
+              case 'definition': return row.definition
               case 'category': return row.category
               case 'Watershed': return row.Watershed
               case 'ecoregion': return row.ecoregion
               case 'Wetland Type': return row['Wetland Type']
+              case 'huc_name': return row.huc_name
+              case 'project': return row.project
+              case 'name': return row.name
               case 'latitude': return row.latitude
               case 'longitude': return row.longitude
               default: return undefined

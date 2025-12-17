@@ -11,6 +11,8 @@ export interface SiteAttribute {
   huc_name: string
   wet_type: string
   sysclass: string
+  project?: string
+  name?: string
 }
 
 // Water Chemistry types
@@ -27,8 +29,10 @@ export interface WaterParam {
   units: string
   category: string
   label: string
-  acute?: number
-  chronic?: number
+  mdl?: number
+  lrl?: number
+  method?: string
+  fraction?: string
 }
 
 // Soil Chemistry types
@@ -41,7 +45,7 @@ export interface SoilRecord {
 
 export interface SoilParam {
   parameter: string
-  definition: string
+  definition?: string
   units: string
   label: string
 }
