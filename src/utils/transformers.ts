@@ -268,6 +268,8 @@ export function transformSoilData(
       return result
     })
     .filter((s): s is SoilData => s !== null && !isNaN(s.value))
+    // Filter out negative nitrate values (will be handled as data flags later)
+    .filter((s) => !(['no3n_s', 'no3n_e'].includes(s.parameter) && s.value < 0))
 }
 
 /**
