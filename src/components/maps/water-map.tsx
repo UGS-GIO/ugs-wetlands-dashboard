@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import maplibregl, { StyleSpecification } from 'maplibre-gl'
 import * as d3 from 'd3'
-import { useMapLegend, VerticalLegend, HorizontalLegend } from './map-legend'
+import { useMapLegend, LegendControl, SampleTypeLegendControl, HorizontalLegend } from './map-legend'
 
 interface DataPoint {
   value: number
@@ -22,6 +22,8 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
   const markers = useRef<maplibregl.Marker[]>([])
+  const legendControl = useRef<LegendControl | null>(null)
+  const sampleTypeLegend = useRef<SampleTypeLegendControl | null>(null)
   const [basemap, setBasemap] = useState<'light' | 'dark'>('light')
 
   // Initialize map once
@@ -55,6 +57,12 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
     })
 
     map.current.addControl(new maplibregl.NavigationControl(), 'top-left')
+
+    // Add legend controls (value legend first, then sample type on top)
+    legendControl.current = new LegendControl()
+    sampleTypeLegend.current = new SampleTypeLegendControl()
+    map.current.addControl(legendControl.current, 'bottom-right')
+    map.current.addControl(sampleTypeLegend.current, 'bottom-right')
 
     return () => {
       if (map.current) {
@@ -192,6 +200,13 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
   const validData = data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude))
   const legendData = useMapLegend(validData)
 
+  // Update legend control when data changes
+  useEffect(() => {
+    if (legendControl.current) {
+      legendControl.current.update(parameter, units, legendData)
+    }
+  }, [parameter, units, legendData])
+
   return (
     <div className="flex flex-col">
       {/* Map wrapper */}
@@ -219,28 +234,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
         {/* Map container */}
         <div ref={mapContainer} style={{ height: '500px', width: '100%', borderRadius: '8px' }} />
 
-        {/* Desktop Legends - inside map */}
-        {legendData && (
-          <div className="hidden lg:block absolute bottom-12 right-4 space-y-2">
-            {/* Sample type legend */}
-            <div className="bg-white rounded-lg shadow-md p-3 text-sm">
-              <div className="font-medium text-gray-900 mb-2">Sample Type (Outline)</div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-1" style={{ backgroundColor: '#000000' }} />
-                  <span className="text-gray-700">Filtered</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-1" style={{ backgroundColor: '#7f7f7f' }} />
-                  <span className="text-gray-700">Unfiltered</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Value legend with gradient */}
-            <VerticalLegend parameter={parameter} units={units} legendData={legendData} />
-          </div>
-        )}
+        {/* Desktop legends are handled by MapLibre controls */}
 
         {data.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">

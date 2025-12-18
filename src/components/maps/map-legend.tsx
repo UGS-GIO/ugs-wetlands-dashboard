@@ -1,4 +1,90 @@
 import * as d3 from 'd3'
+import maplibregl from 'maplibre-gl'
+
+// Custom MapLibre control for legend
+export class LegendControl implements maplibregl.IControl {
+  private container: HTMLDivElement | null = null
+  private parameter: string = ''
+  private units: string = ''
+  private legendData: ReturnType<typeof useMapLegend> = null
+
+  onAdd(): HTMLElement {
+    this.container = document.createElement('div')
+    this.container.className = 'maplibregl-ctrl maplibregl-ctrl-group'
+    this.render()
+    return this.container
+  }
+
+  onRemove(): void {
+    if (this.container?.parentNode) {
+      this.container.parentNode.removeChild(this.container)
+    }
+    this.container = null
+  }
+
+  update(parameter: string, units: string, legendData: ReturnType<typeof useMapLegend>): void {
+    this.parameter = parameter
+    this.units = units
+    this.legendData = legendData
+    this.render()
+  }
+
+  private render(): void {
+    if (!this.container) return
+
+    if (!this.legendData) {
+      this.container.innerHTML = ''
+      this.container.style.display = 'none'
+      return
+    }
+
+    this.container.style.display = 'block'
+    this.container.innerHTML = `
+      <div style="background: white; border-radius: 8px; padding: 12px; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+        <div style="font-weight: 600; color: #333; margin-bottom: 8px;">${this.parameter} (${this.units})</div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="display: flex; flex-direction: column; justify-content: space-between; height: 150px; font-size: 11px; color: #555;">
+            ${this.legendData.tickValues.map(val => `<div style="text-align: right; line-height: 1;">${this.legendData!.formatValue(val)}</div>`).join('')}
+          </div>
+          <div style="width: 16px; height: 150px; background: ${this.legendData.gradientCSS}; border: 1px solid #ccc; border-radius: 2px;"></div>
+        </div>
+      </div>
+    `
+  }
+}
+
+// Custom MapLibre control for sample type legend (water chemistry only)
+export class SampleTypeLegendControl implements maplibregl.IControl {
+  private container: HTMLDivElement | null = null
+
+  onAdd(): HTMLElement {
+    this.container = document.createElement('div')
+    this.container.className = 'maplibregl-ctrl maplibregl-ctrl-group'
+    this.container.innerHTML = `
+      <div style="background: white; border-radius: 8px; padding: 12px; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+        <div style="font-weight: 600; color: #333; margin-bottom: 8px;">Sample Type (Outline)</div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 3px; background: #000000;"></div>
+            <span style="color: #555;">Filtered</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 16px; height: 1px; background: #7f7f7f;"></div>
+            <span style="color: #555;">Unfiltered</span>
+          </div>
+        </div>
+      </div>
+    `
+    return this.container
+  }
+
+  onRemove(): void {
+    if (this.container?.parentNode) {
+      this.container.parentNode.removeChild(this.container)
+    }
+    this.container = null
+  }
+}
 
 export function useMapLegend(data: { value: number }[]) {
   if (data.length === 0) return null

@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import * as d3 from 'd3'
-import { useMapLegend, VerticalLegend, HorizontalLegend } from './map-legend'
+import { useMapLegend, LegendControl, HorizontalLegend } from './map-legend'
 
 interface DataPoint {
   siteid: string
@@ -22,6 +22,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
   const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<maplibregl.Marker[]>([])
+  const legendControl = useRef<LegendControl | null>(null)
   const [basemap, setBasemap] = useState<'light' | 'dark'>('light')
 
   const basemapUrls = {
@@ -41,6 +42,10 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
     })
 
     map.current.addControl(new maplibregl.NavigationControl(), 'top-left')
+
+    // Add legend control
+    legendControl.current = new LegendControl()
+    map.current.addControl(legendControl.current, 'bottom-right')
 
     return () => {
       if (map.current) {
@@ -113,6 +118,13 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
   const validData = data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude))
   const legendData = useMapLegend(validData)
 
+  // Update legend control when data changes
+  useEffect(() => {
+    if (legendControl.current) {
+      legendControl.current.update(parameter, units, legendData)
+    }
+  }, [parameter, units, legendData])
+
   return (
     <div className="flex flex-col">
       {/* Map wrapper */}
@@ -140,12 +152,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
         {/* Map container */}
         <div ref={mapContainer} style={{ height: '500px', width: '100%', borderRadius: '8px' }} />
 
-        {/* Desktop Legend - inside map */}
-        {legendData && (
-          <div className="hidden lg:block absolute bottom-12 right-4">
-            <VerticalLegend parameter={parameter} units={units} legendData={legendData} />
-          </div>
-        )}
+        {/* Desktop legend is handled by MapLibre control */}
 
         {data.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-lg">
