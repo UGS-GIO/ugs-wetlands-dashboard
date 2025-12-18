@@ -142,7 +142,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
 
         {/* Desktop Legend - inside map */}
         {legendData && (
-          <div className="hidden lg:block absolute bottom-4 right-4">
+          <div className="hidden lg:block absolute bottom-12 right-4">
             <VerticalLegend parameter={parameter} units={units} legendData={legendData} />
           </div>
         )}

@@ -221,7 +221,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
 
         {/* Desktop Legends - inside map */}
         {legendData && (
-          <div className="hidden lg:block absolute bottom-4 right-4 space-y-2">
+          <div className="hidden lg:block absolute bottom-12 right-4 space-y-2">
             {/* Sample type legend */}
             <div className="bg-white rounded-lg shadow-md p-3 text-sm">
               <div className="font-medium text-gray-900 mb-2">Sample Type (Outline)</div>
