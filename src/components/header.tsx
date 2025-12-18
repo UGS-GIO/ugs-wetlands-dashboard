@@ -15,7 +15,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border backdrop-blur-lg px-4 md:px-8 py-3">
+    <header className="sticky top-0 z-50 bg-background border-b border-border backdrop-blur-lg px-4 md:px-8 py-2">
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2 md:gap-4">
           <a href="https://geology.utah.gov/water/wetlands/" target="_blank" rel="noopener noreferrer">
@@ -33,9 +33,9 @@ export default function Header() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="block px-6 py-3 text-white no-underline border-b-2 border-transparent transition-all duration-200 text-base hover:border-[#AAAAAA]"
+                className="block px-4 py-1 text-white no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-[#AAAAAA]"
                 activeProps={{
-                  className: "block px-6 py-3 text-white no-underline border-b-2 border-[#e69800] transition-all duration-200 text-base"
+                  className: "block px-4 py-1 text-white no-underline border-b-2 border-[#e69800] transition-all duration-200 text-base text-center"
                 }}
               >
                 {link.label}
