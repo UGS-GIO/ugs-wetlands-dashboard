@@ -79,11 +79,11 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
     title: 'General and Nutrients',
     content: `General chemistry parameters are the key drivers of which organisms can survive in wetlands, based on tolerance to salinity, alkalinity, and organic matter. Nutrients are the compounds plants need to grow, including elements in fertilizers, and are most accessible to plants in soils.
 
-• pH measures the acidity (pH < 7) or alkalinity (pH > 7) of soil. Many Utah soils are alkaline due to the prevalence of carbonate rock.
-• Conductivity is a measure of soil salinity. Saline soils are challenging for plants to grow in because they affect the plant's water balance. Many wetland plants have adaptations to survive salty soils.
-• Organic matter is the portion of soil composed of material from organisms in various stages of decomposition. Organic matter builds up in wetland soils because decomposition is slower than in uplands. Soil organic matter provides crucial nutrients for plants and is a form of carbon storage.
-• Nitrogen in soils is more easily accessed by plant roots than nitrogen in water, but is needed for the same cell processes. Nitrate and ammonia forms of nitrogen are both found in wetland soils, but ammonia concentration is often higher because nitrates are converted to other forms in oxygen-depleted conditions.
-• Phosphorus accumulates in wetland soils because it readily binds to sediments. Plants are able to easily access phosphorus in soil for their metabolic needs, but much of it remains bound to soils and is a good indicator of legacy nutrient enrichment.`,
+• <strong>pH</strong> measures the acidity (pH < 7) or alkalinity (pH > 7) of soil. Many Utah soils are alkaline due to the prevalence of carbonate rock.
+• <strong>Conductivity</strong> is a measure of soil salinity. Saline soils are challenging for plants to grow in because they affect the plant's water balance. Many wetland plants have adaptations to survive salty soils.
+• <strong>Organic matter</strong> is the portion of soil composed of material from organisms in various stages of decomposition. Organic matter builds up in wetland soils because decomposition is slower than in uplands. Soil organic matter provides crucial nutrients for plants and is a form of carbon storage.
+• <strong>Nitrogen</strong> in soils is more easily accessed by plant roots than nitrogen in water, but is needed for the same cell processes. Nitrate and ammonia forms of nitrogen are both found in wetland soils, but ammonia concentration is often higher because nitrates are converted to other forms in oxygen-depleted conditions.
+• <strong>Phosphorus</strong> accumulates in wetland soils because it readily binds to sediments. Plants are able to easily access phosphorus in soil for their metabolic needs, but much of it remains bound to soils and is a good indicator of legacy nutrient enrichment.`,
   },
   ipms: {
     title: 'Element Scan',
@@ -137,25 +137,15 @@ function SoilChemistry() {
           <h2 className="text-2xl font-bold mb-4">Soil Chemistry</h2>
 
           <p className="text-base mb-4">
-            Wetland soils are unique because they are either permanently or seasonally flooded. Flooding removes oxygen
-            from the soil and the lack of oxygen limits decomposition, allowing soil organic matter to build up. Organic
-            matter produces dark colored and carbon-rich wetland soils. Wetland soils store more carbon than any other
-            terrestrial habitat. The presence and chemistry of wetland soils tells a story of how the wetland functions.
+            Soil is where plants are rooted, where the nutrients they need are stored, and where many of the biogeochemical processes that wetlands perform occur. Wetland soils are different from "upland" soils because flooding depletes oxygen in the soil. In the absence of oxygen, soil microbes transform nitrogen, manganese, sulfur, and compounds to metabolize. Water moves slowly through wetlands, which allows chemicals in the water column to settle out and bind to soils. The accumulation and transformation of chemicals in the soil give a more integrated picture of wetland chemistry than water. Soils are also a more reliable measure of the wetland environment because they are always present, whereas water is not.
           </p>
 
           <p className="text-base mb-4">
-            Two types of soil measures are displayed below: general chemistry measures and nutrients that are the
-            results of individual soil analyses and elemental scan results produced by mass spectrometry analysis.
-          </p>
-
-          <p className="text-base mb-4">
-            <strong>Explore the data</strong> by using the drop-down menus to change the data topics and metrics to
-            change the maps and charts below.
+            <strong>Explore the data</strong> by using the drop-down menus to change the data topics and metrics to change the maps and charts below.
           </p>
 
           <p className="text-base">
-            Data notes. For the purpose of clear data visualization, parameters not included in the plots below can be
-            downloaded.
+            Two types of soil measures are displayed below: general chemistry measures and nutrients that are the results of individual soil analyses and elemental scan results produced by mass spectrometry analysis.
           </p>
         </div>
 
@@ -235,7 +225,7 @@ function SoilChemistry() {
         {/* Category Description Card */}
         {description && (
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
-            <h3 className="text-xl font-bold text-primary mb-2">{description.title}</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">{description.title}</h3>
             <div className="text-base whitespace-pre-line">{description.content}</div>
           </div>
         )}
@@ -243,19 +233,19 @@ function SoilChemistry() {
 
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <h3 className="text-xl font-bold text-primary mb-2">Spatial Patterns</h3>
+        <h3 className="text-xl font-bold text-foreground mb-2">Spatial Patterns</h3>
         <SoilMap data={filteredData} parameter={parameterLabel} units={paramMeta?.units || ''} />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Parameter Distribution</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Parameter Distribution</h3>
           <Histogram data={filteredData} groupBy={grouping} parameter={parameterLabel} units={paramMeta?.units || ''} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Group Comparison</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Group Comparison</h3>
           <Boxplot data={filteredData} groupBy={grouping} parameter={parameterLabel} units={paramMeta?.units || ''} />
         </div>
       </div>
@@ -263,12 +253,12 @@ function SoilChemistry() {
       {/* Summary & Download */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Summary Statistics</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Summary Statistics</h3>
           <SummaryTable data={filteredData} groupBy={grouping} units={paramMeta?.units || ''} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Download Soil Data</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Download Soil Data</h3>
           <p className="mb-4 text-base">
             Download soil chemistry data in a convenient format for your own analysis, research, or reporting. Choose a
             category below.
@@ -356,10 +346,11 @@ function SummaryTable({
     grouped[group].push(record.value)
   })
 
-  // Format to 2 significant figures (matching R's signif(., 2))
-  const signif = (n: number, digits: number = 2) => {
+  // Format to 3 significant figures (matching R's signif(., 3))
+  const signif = (n: number, digits: number = 3) => {
     if (n === 0) return '0'
-    return parseFloat(n.toPrecision(digits)).toString()
+    const val = parseFloat(n.toPrecision(digits))
+    return val >= 1000 ? val.toLocaleString() : val.toString()
   }
 
   // Show all groups in summary table (matching R Shiny app)
@@ -401,7 +392,7 @@ function SummaryTable({
           {stats.map((stat) => (
             <tr key={stat.group} className="border-b border-border/50">
               <td className="py-2">{stat.group}</td>
-              <td className="text-right py-2">{stat.n}</td>
+              <td className="text-right py-2">{stat.n.toLocaleString()}</td>
               <td className="text-right py-2">{stat.min}</td>
               <td className="text-right py-2">{stat.median}</td>
               <td className="text-right py-2">{stat.mean}</td>

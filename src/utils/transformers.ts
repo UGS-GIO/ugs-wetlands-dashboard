@@ -1,4 +1,18 @@
 import { classifyHuc, classifyWetland } from './classify'
+
+/**
+ * Normalize units to use capital L for liters, µ for micro, and ° for degrees
+ */
+function normalizeUnits(units: string): string {
+  if (!units) return units
+  return units
+    .replace(/\/l$/i, '/L')      // mg/l -> mg/L
+    .replace(/\/l\b/gi, '/L')    // any /l followed by word boundary
+    .replace(/^ug\//i, 'µg/')    // ug/L -> µg/L
+    .replace(/^uS\//i, 'µS/')    // uS/cm -> µS/cm
+    .replace(/^umhos\//i, 'µmhos/') // umhos/cm -> µmhos/cm
+    .replace(/^C$/i, '°C')       // C -> °C (Celsius)
+}
 import type {
   WaterRecord,
   WaterParam,
@@ -99,6 +113,7 @@ function addSiteAttributes(siteid: string, sites: SiteAttribute[]) {
     huc_name: site.huc_name,
     project: site.project,
     name: site.name,
+    date: site.date,
   }
 }
 
@@ -111,7 +126,7 @@ export function transformWaterParams(params: WaterParam[]): WaterParamWithCriter
     if (p.parameter === 'ph') label = 'pH'
     if (p.parameter === 'do_sat') label = 'Dissolved Oxygen 2'
     if (p.parameter === 'do_conc') label = 'Dissolved Oxygen'
-    if (p.parameter === 'po4_d') label = 'Phosphate'
+    if (p.parameter === 'po4_d') label = 'Phosphate-P'
 
     return {
       ...p,
@@ -132,9 +147,20 @@ export function transformWaterParams(params: WaterParam[]): WaterParamWithCriter
 export function transformWaterData(
   records: WaterRecord[],
   params: WaterParamWithCriteria[],
-  sites: SiteAttribute[]
+  sites: SiteAttribute[],
+  flags?: FlagRecord[]
 ): WaterData[] {
   const filteredSites = filterSites(sites)
+
+  // Create flag lookup by site_param
+  const flagMap = new Map<string, string>()
+  if (flags) {
+    flags.forEach((f) => {
+      if (f.site_param && f.flag) {
+        flagMap.set(f.site_param, f.flag)
+      }
+    })
+  }
 
   // First pass: transform all records
   const transformed = records
@@ -157,7 +183,7 @@ export function transformWaterData(
 
       const result: WaterData = {
         ...w,
-        units: param.units || '',
+        units: normalizeUnits(param.units || ''),
         label: param.label || '',
         category: param.category || '',
         acute: param.acute,
@@ -166,6 +192,7 @@ export function transformWaterData(
         mdl: param.mdl,
         lrl: param.lrl,
         method: param.method,
+        flag: flagMap.get(w.site_param),
         ...siteAttrs,
         fraction,
         isOutlier: false,
@@ -232,7 +259,7 @@ export function transformSoilData(
 
       const result: SoilData = {
         ...s,
-        units: param.units || '',
+        units: normalizeUnits(param.units || ''),
         label: param.label || '',
         category,
         definition: param.definition,

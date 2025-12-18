@@ -25,13 +25,13 @@ const CHART_COLORS = {
     text: '#e0e0e0',
     axis: '#e0e0e0',
     caption: '#999999',
-    legendBg: 'rgba(40, 40, 40, 0.85)',
+    legendBg: '#2B2B2B', // matches --card: 0 0% 17%
   },
   light: {
     text: '#333333',
     axis: '#555555',
     caption: '#666666',
-    legendBg: 'rgba(255, 255, 255, 0.9)',
+    legendBg: '#FFFFFF', // matches --card: 0 0% 100%
   },
 }
 
@@ -165,7 +165,7 @@ export default function Histogram({
         const yAxis = d3.axisLeft(yScale).tickFormat((d) => d3.format(',')(Number(d)))
         const yAxisGroup = facetGroup.append('g').attr('class', 'y-axis').call(yAxis)
 
-        yAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '11px')
+        yAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '12px')
         yAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
         yAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
       }
@@ -174,7 +174,7 @@ export default function Histogram({
       const xAxis = d3.axisBottom(xScale).ticks(5)
       const xAxisGroup = facetGroup.append('g').attr('class', 'x-axis').attr('transform', `translate(0,${height})`).call(xAxis)
 
-      xAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '11px')
+      xAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '12px')
       xAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
       xAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
 
@@ -248,10 +248,10 @@ export default function Histogram({
     svg
       .append('text')
       .attr('x', totalWidth / 2)
-      .attr('y', height + 45)
+      .attr('y', height + 42)
       .attr('text-anchor', 'middle')
       .attr('fill', chartText)
-      .attr('font-size', '12px')
+      .attr('font-size', '13px')
       .text('Frequency')
 
     // Y-axis label (Parameter - since flipped)
@@ -259,10 +259,10 @@ export default function Histogram({
       .append('text')
       .attr('transform', 'rotate(-90)')
       .attr('x', -height / 2)
-      .attr('y', -60)
+      .attr('y', -65)
       .attr('text-anchor', 'middle')
       .attr('fill', chartText)
-      .attr('font-size', '12px')
+      .attr('font-size', '13px')
       .text(`${parameter} (${units})`)
 
     // Legend (inside plot area, matching R's legend.position.inside = c(0.7, 0.8))
@@ -290,7 +290,7 @@ export default function Histogram({
         .attr('x', 15)
         .attr('y', 9)
         .attr('fill', chartText)
-        .attr('font-size', '10px')
+        .attr('font-size', '11px')
         .text(group)
     })
 

@@ -18,6 +18,7 @@ import {
   waterRecordsQueryOptions,
   waterParamsQueryOptions,
   siteAttributesQueryOptions,
+  flagsQueryOptions,
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
 import { transformWaterParams, transformWaterData } from '../utils/transformers'
@@ -30,7 +31,7 @@ const CATEGORY_OPTIONS = {
   metal: 'Metal(oids)',
 }
 
-// Download dropdown uses "Toxics" to match R Shiny app (category in DB is 'toxic')
+// Download categories matching database category values
 const DOWNLOAD_GROUP_OPTIONS = {
   genchem: 'General Chemistry',
   nuts: 'Nutrients',
@@ -49,7 +50,7 @@ const PARAMETER_OPTIONS: Record<string, Record<string, string>> = {
     'Biological Oxygen Demand': 'Biological Oxygen Demand',
     Ammonia: 'Ammonia-N',
     Nitrate: 'Nitrate + Nitrite-N',
-    Phosphate: 'Phosphate',
+    Phosphate: 'Phosphate-P',
   },
   metal: {
     Aluminum: 'Aluminum',
@@ -105,12 +106,13 @@ function WaterChemistry() {
   const { data: waterRecords } = useSuspenseQuery(waterRecordsQueryOptions)
   const { data: paramsData } = useSuspenseQuery(waterParamsQueryOptions)
   const { data: sitesData } = useSuspenseQuery(siteAttributesQueryOptions)
+  const { data: flagsData } = useSuspenseQuery(flagsQueryOptions)
 
   const { waterData, waterParams } = useMemo(() => {
     const waterParams = transformWaterParams(paramsData)
-    const waterData = transformWaterData(waterRecords, waterParams, sitesData)
+    const waterData = transformWaterData(waterRecords, waterParams, sitesData, flagsData)
     return { waterData, waterParams }
-  }, [waterRecords, paramsData, sitesData])
+  }, [waterRecords, paramsData, sitesData, flagsData])
 
   const [category, setCategory] = useState<keyof typeof CATEGORY_OPTIONS>('genchem')
   const [parameter, setParameter] = useState<string>('Electrical Conductivity')
@@ -252,7 +254,7 @@ function WaterChemistry() {
         {/* Category Description Card */}
         {description && (
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
-            <h3 className="text-xl font-bold text-primary mb-2">{description.title}</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">{description.title}</h3>
             <div className="text-base whitespace-pre-line">{description.content}</div>
           </div>
         )}
@@ -260,14 +262,14 @@ function WaterChemistry() {
 
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <h3 className="text-xl font-bold text-primary mb-2">Spatial Patterns</h3>
+        <h3 className="text-xl font-bold text-foreground mb-2">Spatial Patterns</h3>
         <WaterMap data={chartData} parameter={parameter} units={paramMeta?.units || ''} />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Parameter Distribution</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Parameter Distribution</h3>
           <Histogram
             data={chartData}
             groupBy={grouping}
@@ -280,7 +282,7 @@ function WaterChemistry() {
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Group Comparison</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Group Comparison</h3>
           <Boxplot
             data={chartData}
             groupBy={grouping}
@@ -294,12 +296,12 @@ function WaterChemistry() {
       {/* Summary & Download */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Summary Statistics</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Summary Statistics</h3>
           <SummaryTable data={chartData} groupBy={grouping} units={paramMeta?.units || ''} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Download Water Data</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Download Water Data</h3>
           <p className="mb-4 text-base">
             Download water quality data in a convenient format for your own analysis, research, or reporting. Choose a
             category below.
@@ -344,23 +346,25 @@ function WaterChemistry() {
         onAccept={() => {
           setShowDisclaimer(false)
           const downloadData = waterData.filter((d) => downloadGroups.includes(d.category as keyof typeof DOWNLOAD_GROUP_OPTIONS))
-          const headers = ['siteid', 'parameter', 'value', 'units', 'definition', 'mdl', 'lrl', 'method', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'huc_name', 'project', 'name', 'latitude', 'longitude']
+          const headers = ['siteid', 'parameter', 'value', 'units', 'flag', 'definition', 'mdl', 'lrl', 'method', 'category', 'Watershed', 'Ecoregion', 'Wetland Type', 'huc_name', 'project', 'date', 'name', 'latitude', 'longitude']
           downloadCSV(downloadData, `water-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
             switch (key) {
               case 'siteid': return row.siteid
               case 'parameter': return row.parameter
               case 'value': return row.value
               case 'units': return row.units
+              case 'flag': return row.flag
               case 'definition': return row.definition
               case 'mdl': return row.mdl
               case 'lrl': return row.lrl
               case 'method': return row.method
               case 'category': return row.category
               case 'Watershed': return row.Watershed
-              case 'ecoregion': return row.ecoregion
+              case 'Ecoregion': return row.ecoregion
               case 'Wetland Type': return row['Wetland Type']
               case 'huc_name': return row.huc_name
               case 'project': return row.project
+              case 'date': return row.date
               case 'name': return row.name
               case 'latitude': return row.latitude
               case 'longitude': return row.longitude
@@ -390,10 +394,11 @@ function SummaryTable({
     grouped[group].push(record.value)
   })
 
-  // Format to 2 significant figures (matching R's signif(., 2))
-  const signif = (n: number, digits: number = 2) => {
+  // Format to 3 significant figures (matching R's signif(., 3))
+  const signif = (n: number, digits: number = 3) => {
     if (n === 0) return '0'
-    return parseFloat(n.toPrecision(digits)).toString()
+    const val = parseFloat(n.toPrecision(digits))
+    return val >= 1000 ? val.toLocaleString() : val.toString()
   }
 
   // Show all groups in summary table (matching R Shiny app)
@@ -435,7 +440,7 @@ function SummaryTable({
           {stats.map((stat) => (
             <tr key={stat.group} className="border-b border-border/50">
               <td className="py-2">{stat.group}</td>
-              <td className="text-right py-2">{stat.n}</td>
+              <td className="text-right py-2">{stat.n.toLocaleString()}</td>
               <td className="text-right py-2">{stat.min}</td>
               <td className="text-right py-2">{stat.median}</td>
               <td className="text-right py-2">{stat.mean}</td>

@@ -212,7 +212,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
       .selectAll('.tick text, .tick tspan')
       .style('text-anchor', 'middle')
       .attr('fill', chartText)
-      .attr('font-size', '11px')
+      .attr('font-size', '12px')
 
     xAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
     xAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
@@ -221,7 +221,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
     const yAxis = d3.axisLeft(y).tickFormat((d) => `${d}%`)
     const yAxisGroup = svg.append('g').attr('class', 'y-axis').call(yAxis)
 
-    yAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '11px')
+    yAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '12px')
     yAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
     yAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
 
@@ -230,10 +230,10 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
       .append('text')
       .attr('transform', 'rotate(-90)')
       .attr('x', -height / 2)
-      .attr('y', -60)
+      .attr('y', -65)
       .attr('text-anchor', 'middle')
       .attr('fill', chartText)
-      .attr('font-size', '12px')
+      .attr('font-size', '13px')
       .text('Relative Abundance (%)')
 
     // Legend
@@ -252,7 +252,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
         .attr('x', 20)
         .attr('y', 11)
         .attr('fill', chartText)
-        .attr('font-size', '10px')
+        .attr('font-size', '11px')
         .text(group.length > 18 ? group.substring(0, 18) + '...' : group)
     })
 

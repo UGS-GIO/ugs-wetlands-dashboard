@@ -108,7 +108,7 @@ function Home() {
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="mt-0 text-xl font-bold text-primary">Data Sources</h3>
+          <h3 className="mt-0 text-xl font-bold text-foreground">Data Sources</h3>
 
           <p className="mb-4">
             The bulk of data included here is from samples gathered as part of wetland condition monitoring surveys
@@ -120,9 +120,9 @@ function Home() {
             across Utah. To learn more about data included in this dashboard, check out the resources below:
           </p>
 
-          <ul className="ml-6">
+          <ul className="list-disc ml-6">
             <li>
-              <a href="https://geology.utah.gov/water/wetlands/" target="_blank" rel="noopener">
+              <a href="https://geology.utah.gov/water/wetlands/" target="_blank" rel="noopener" className="text-primary">
                 The UGS Wetlands Program website
               </a>
             </li>
@@ -131,17 +131,18 @@ function Home() {
                 href="https://geodata.geology.utah.gov/pages/collections_featured.php?parent=665"
                 target="_blank"
                 rel="noopener"
+                className="text-primary"
               >
                 The Wetlands collection in the Utah GeoData Archive
               </a>
             </li>
             <li>
-              <a href="https://wetlandplants.geology.utah.gov/" target="_blank" rel="noopener">
+              <a href="https://wetlandplants.geology.utah.gov/" target="_blank" rel="noopener" className="text-primary">
                 The Utah Wetland Plant Application
               </a>
             </li>
             <li>
-              <a href="https://wetlands.geology.utah.gov/" target="_blank" rel="noopener">
+              <a href="https://wetlands.geology.utah.gov/" target="_blank" rel="noopener" className="text-primary">
                 The Utah Wetland Mapper
               </a>
             </li>
@@ -151,7 +152,7 @@ function Home() {
 
       {/* Ways to Explore */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <h3 className="text-xl font-bold text-primary">Ways to Explore the Data</h3>
+        <h3 className="text-xl font-bold text-foreground">Ways to Explore the Data</h3>
 
         <p className="mb-4">
           The tabs at the top of this page will guide you through visualizations and summaries of water chemistry, soil
@@ -189,6 +190,22 @@ function Home() {
           <li>
             <strong>On Your Own</strong>: A 'Download' button is at the bottom of each tab, where you can download a
             subset of parameters or all the data.
+          </li>
+        </ul>
+
+        <p className="mb-4">
+          <strong>Populations</strong>: The dropdowns at the top of each page allow you to divide data in the plots and tables into different groups.
+        </p>
+
+        <ul className="list-disc ml-6">
+          <li>
+            <strong>Watersheds</strong>: The climate, topography, hydrology, and geology of a watershed determine where wetlands are located and what type of wetlands exist there. The United States is divided into Hydrologic Unit Codes (HUC's), with longer codes (2-12 digits) showing higher resolution of shared water sources. We are showing data in 6-digit Basin codes.
+          </li>
+          <li>
+            <strong>Ecoregions</strong>: The U.S. is also divided into ecoregions, which are areas that support similar ecosystems because they have the same landforms, climate, biological communities, and land uses. Utah is very ecologically diverse and supports seven Level III ecoregions, from the arid Colorado Plateau to the high elevation Wasatch and Uinta Mountains.
+          </li>
+          <li>
+            <strong>Wetland Type</strong>: Wetlands can be grouped in several ways, here we are lumping them together by their dominant vegetation type, following the classes developed by Cowardin for the U.S. Fish and Wildlife Service.
           </li>
         </ul>
       </div>

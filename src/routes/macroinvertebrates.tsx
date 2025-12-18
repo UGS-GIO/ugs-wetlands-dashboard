@@ -40,7 +40,7 @@ const COMMUNITY_OPTIONS = {
 
 const PARAMETER_DESCRIPTIONS: Record<string, string> = {
   abundance: `<strong>Abundance</strong> is the total number of macroinvertebrates of any group found in a sample taken by sweeping a net at the soil/water interface. Healthy wetlands have macroinvertebrate communities that are both abundant and diverse.`,
-  richness: `<strong>Taxa Richness</strong> is the number of unique macroinvertebrate taxa (types) found in a sample. More diverse communities indicate healthier wetlands with varied microhabitats.`,
+  richness: `<strong>Taxa Richness</strong> is a count of all the different types of organisms in a sample. An organism can be identified at many levels, depending on the life stage of the invertebrate and the skill of the laboratory. Species is the most detailed taxonomic level, but especially small and cryptic invertebrates may only be identified to Order (ex. mites are in the order Trombidiformes). From largest to smallest, taxonomic levels are Kingdom > Phylum > Class > Order > Family > Genus > Species.`,
   eto_rel: `<strong>ETO Relative Richness</strong> is the proportion of the total measure of abundance that is composed of three orders of insects: Ephemeroptera (mayflies), Tricoptera (caddisflies), and Odonata (dragon- and damselflies). These orders are especially sensitive to disturbances like changes in water quality. Samples with a majority of ETO taxa are indicators of low disturbance and healthier wetlands.`,
 }
 
@@ -88,21 +88,11 @@ function Macroinvertebrates() {
           <h2 className="text-2xl font-bold mb-4">Macroinvertebrates</h2>
 
           <p className="text-base mb-4">
-            Macroinvertebrates are animals without backbones that spend at least part of their lives in water.
-            Macroinvertebrates include dragonflies, snails, worms, crustaceans, beetles, and many more. Most
-            macroinvertebrates spend their entire larval stage in water and then undergo a dramatic metamorphosis to
-            become flying adult insects. Macroinvertebrate communities are indicators of wetland condition because
-            different macroinvertebrate groups have unique tolerances to disturbance.
-          </p>
-
-          <p className="text-base mb-4">
-            <strong>Explore the data</strong> using the drop-down menus to change the data topics and metrics to change
-            the maps and charts below.
+            Macroinvertebrates are organisms without internal skeletons that are larger than 0.5 millimeters. Common types of macroinvertebrates found in Utah wetlands include larval insects (midges, flies, dragonflies, etc.), worms, snails, and crayfish. Macroinvertebrates form crucial links in the wetland foodweb, feeding on plants and decomposing material and in turn being eaten by birds, amphibians, and fish. The community data presented here are benthic macroinvertebrates: the community of invertebrates that live in the water. Flying macroinvertebrates and those living on the plants are also important, but much harder to accurately count. The size, diversity, and makeup of benthic macroinvertebrates are indicators of ecosystem health and water quality, though research is still needed to determine which species are the most reliable signals of healthy wetlands.
           </p>
 
           <p className="text-base">
-            Data notes. Macroinvertebrate data was collected using standardized sampling methods. Taxa were identified
-            to the lowest practical taxonomic level.
+            <strong>Explore the data</strong> using the drop-down menus to change the data topics and metrics to change the maps and charts below.
           </p>
         </div>
 
@@ -166,7 +156,7 @@ function Macroinvertebrates() {
         {/* Parameter Description Card */}
         {description && (
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
-            <h3 className="text-xl font-bold text-primary mb-2">{PARAMETER_OPTIONS[parameter]}</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">{PARAMETER_OPTIONS[parameter]}</h3>
             <div className="text-base" dangerouslySetInnerHTML={{ __html: description }} />
           </div>
         )}
@@ -174,14 +164,14 @@ function Macroinvertebrates() {
 
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <h3 className="text-xl font-bold text-primary mb-2">Spatial Patterns</h3>
+        <h3 className="text-xl font-bold text-foreground mb-2">Spatial Patterns</h3>
         <SoilMap data={filteredData} parameter={PARAMETER_OPTIONS[parameter]} units={PARAMETER_UNITS[parameter]} />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Parameter Distribution</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Parameter Distribution</h3>
           <Histogram
             data={filteredData}
             groupBy={grouping}
@@ -191,7 +181,7 @@ function Macroinvertebrates() {
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Group Comparison</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Group Comparison</h3>
           <Boxplot
             data={filteredData}
             groupBy={grouping}
@@ -204,12 +194,12 @@ function Macroinvertebrates() {
       {/* Summary & Download */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Summary Statistics</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Summary Statistics</h3>
           <SummaryTable data={filteredData} groupBy={grouping} units={PARAMETER_UNITS[parameter]} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-xl font-bold text-primary mb-2">Download Macroinvertebrate Data</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">Download Macroinvertebrate Data</h3>
           <p className="mb-4 text-base">
             Download macroinvertebrate data in a convenient format for your own analysis, research, or reporting. Choose
             a metric below.
@@ -250,7 +240,7 @@ function Macroinvertebrates() {
 
       {/* Community Plots Section */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <h3 className="text-xl font-bold text-primary mb-2">Macroinvertebrate Community Plots</h3>
+        <h3 className="text-xl font-bold text-foreground mb-2">Macroinvertebrate Community Plots</h3>
         <p className="text-base mb-4">
           The relative abundance of macroinvertebrate community components can provide even more detail on wetland
           functions. Use the dropdown below to explore the relative abundance of feeding groups, types of
@@ -274,8 +264,7 @@ function Macroinvertebrates() {
           </li>
         </ul>
         <p className="text-sm text-muted-foreground italic mb-4">
-          *Some group totals do not add up to 100%. This is due to taking an average of relative abundance within each
-          subpopulation.
+          *Some group totals do not add up to 100%. This is due to taking an average of relative abundance within each subpopulation. Feeding groups, invertebrate types, and orders with few individuals are not visible when site abundances are high.
         </p>
       </div>
 
@@ -322,7 +311,7 @@ function Macroinvertebrates() {
 
       {/* Community Plot */}
       <div className="bg-card border border-border rounded-xl p-4 mb-2">
-        <h3 className="text-xl font-bold text-primary mb-2">Community Comparison</h3>
+        <h3 className="text-xl font-bold text-foreground mb-2">Community Comparison</h3>
         <CommunityPlot
           data={filteredCommunityData}
           groupBy={communityGrouping}
@@ -374,10 +363,11 @@ function SummaryTable({
     grouped[group].push(record.value)
   })
 
-  // Format to 2 significant figures (matching R's signif(., 2))
-  const signif = (n: number, digits: number = 2) => {
+  // Format to 3 significant figures (matching R's signif(., 3))
+  const signif = (n: number, digits: number = 3) => {
     if (n === 0) return '0'
-    return parseFloat(n.toPrecision(digits)).toString()
+    const val = parseFloat(n.toPrecision(digits))
+    return val >= 1000 ? val.toLocaleString() : val.toString()
   }
 
   // Show all groups in summary table (matching R Shiny app)
@@ -419,7 +409,7 @@ function SummaryTable({
           {stats.map((stat) => (
             <tr key={stat.group} className="border-b border-border/50">
               <td className="py-2">{stat.group}</td>
-              <td className="text-right py-2">{stat.n}</td>
+              <td className="text-right py-2">{stat.n.toLocaleString()}</td>
               <td className="text-right py-2">{stat.min}</td>
               <td className="text-right py-2">{stat.median}</td>
               <td className="text-right py-2">{stat.mean}</td>

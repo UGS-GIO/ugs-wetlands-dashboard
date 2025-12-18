@@ -13,6 +13,7 @@ export interface SiteAttribute {
   sysclass: string
   project?: string
   name?: string
+  date?: string
 }
 
 // Water Chemistry types
@@ -70,6 +71,10 @@ export interface InvertTaxon {
 
 export interface FlagRecord {
   site_param: string
+  siteid: string
+  parameter: string
+  value: number
+  flag: string
 }
 
 // Query options for shared site attributes

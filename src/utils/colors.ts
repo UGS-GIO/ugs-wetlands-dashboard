@@ -54,11 +54,11 @@ export const CHART_STYLES = {
   },
   // Boxplot
   boxplot: {
-    strokeColor: '#dedede',
+    strokeColor: '#adadad',
     strokeWidth: 1,
     opacity: 0.9,
     jitterAlpha: 0.8,
-    jitterColor: '#dedede',
+    jitterColor: '#adadad',
   },
   // Community plot (stacked bar)
   communityPlot: {

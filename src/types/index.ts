@@ -45,9 +45,11 @@ export interface WaterData extends WithSiteAttributes {
   mdl?: number
   lrl?: number
   method?: string
+  flag?: string
   huc_name?: string
   project?: string
   name?: string
+  date?: string
 }
 
 export interface WaterParamWithCriteria {
