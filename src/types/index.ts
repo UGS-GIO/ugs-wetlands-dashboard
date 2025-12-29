@@ -75,9 +75,12 @@ export interface SoilData extends WithSiteAttributes {
   label: string
   category: string
   definition?: string
+  method?: string
+  mdl?: number
   huc_name?: string
   project?: string
   name?: string
+  date?: string
 }
 
 // Macroinvertebrate types

@@ -49,6 +49,8 @@ export interface SoilParam {
   definition?: string
   units: string
   label: string
+  method?: string
+  mdl?: number
 }
 
 // Macroinvertebrate types

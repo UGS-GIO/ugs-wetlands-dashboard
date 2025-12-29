@@ -263,6 +263,8 @@ export function transformSoilData(
         label: param.label || '',
         category,
         definition: param.definition,
+        method: param.method,
+        mdl: param.mdl,
         ...siteAttrs,
       }
       return result
