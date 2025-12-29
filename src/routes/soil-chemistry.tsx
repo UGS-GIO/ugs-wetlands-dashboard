@@ -87,7 +87,10 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
   },
   ipms: {
     title: 'Element Scan',
-    content: `Soils reflect the elemental geology of a region, which can be determined using mass spectrometry to measure elemental concentrations in the soil. The elements that accumulate in soils also reflect longer-term patterns of chemistry as contaminants are bound to and buried in soils.`,
+    content: `Soils reflect the elemental geology of a region, which can be determined using mass spectrometry to measure elemental concentrations in the soil. The elements that accumulate in soils also reflect longer-term patterns of chemistry as contaminants are bound to and buried in soils.
+• <strong>Arsenic</strong>, <strong>cadmium</strong>, <strong>copper</strong>, <strong>nickel</strong>, <strong>lead</strong>, <strong>mercury</strong>, <strong>selenium</strong>, and <strong>zinc</strong> are metals and metalloids that indicate a history of contamination from industrial and residential sources. Arsenic and selenium are particularly concerning because they are toxic to wildlife that feed in wetlands.
+• <strong>Potassium</strong>, <strong>calcium</strong>, <strong>magnesium</strong>, and <strong>sulfur</strong> are important plant macronutrients.
+• <strong>Boron</strong>, <strong>copper</strong>, <strong>iron</strong>, <strong>manganese</strong>, <strong>molybdenum</strong>, <strong>nickel</strong>, and <strong>zinc</strong> are critical micronutrients for plants.`,
   },
 }
 
@@ -226,7 +229,7 @@ function SoilChemistry() {
         {description && (
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
             <h3 className="text-xl font-bold text-foreground mb-2">{description.title}</h3>
-            <div className="text-base whitespace-pre-line">{description.content}</div>
+            <div className="text-base whitespace-pre-line" dangerouslySetInnerHTML={{ __html: description.content }} />
           </div>
         )}
       </div>
