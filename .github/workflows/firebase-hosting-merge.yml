@@ -1,0 +1,59 @@
+name: Deploy to Firebase Hosting on merge
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      # Set Firebase environment based on branch
+      - name: Set Firebase Environment Variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "FIREBASE_SERVICE_ACCOUNT_SECRET_NAME=FIREBASE_SERVICE_ACCOUNT_UT_DNR_UGS_WTLNDS_DATAXPLR_PROD" >> $GITHUB_ENV
+            echo "PROJECT_ID=ut-dnr-ugs-wtlnds-dataxplr-prod" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "FIREBASE_SERVICE_ACCOUNT_SECRET_NAME=FIREBASE_SERVICE_ACCOUNT_UT_DNR_UGS_WTLNDS_DATAXPLR_DEV" >> $GITHUB_ENV
+            echo "PROJECT_ID=ut-dnr-ugs-wtlnds-dataxplr-dev" >> $GITHUB_ENV
+          fi
+
+      # Deploy to DEVELOPMENT (develop branch)
+      - name: Deploy to Development
+        if: github.ref == 'refs/heads/develop'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets[env.FIREBASE_SERVICE_ACCOUNT_SECRET_NAME] }}'
+          projectId: '${{ env.PROJECT_ID }}'
+          channelId: live
+          target: main-site
+
+      # Deploy to PRODUCTION (main branch)
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets[env.FIREBASE_SERVICE_ACCOUNT_SECRET_NAME] }}'
+          projectId: '${{ env.PROJECT_ID }}'
+          channelId: live
+          target: main-site

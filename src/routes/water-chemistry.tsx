@@ -85,7 +85,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
 • Carbon is the basis for all life and is found in innumerable chemical forms. We measure organic material in wetlands as organic carbon and biological oxygen demand. The first is a measure of how much organic matter is in the water, and the second is a measure of how much microbial energy is needed to decompose that matter.
 • Nitrogen is necessary for making proteins and conducting photosynthesis, and is the element that most often limits plant growth and productivity. Two forms of nitrogen are measured in wetlands: nitrate, which is more common in well-oxygenated water, and ammonia, which is more common in anoxic waters.
 • Phosphorus is required for metabolism and reproduction in plants, and it is a common component of fertilizers as well as human waste. Phosphate (PO₄) is the most commonly measured form of phosphorus.
-*Nutrients are measured both as total or unfiltered concentration and dissolved or filtered fractions.`,
+<em>*Nutrients are measured both as total or unfiltered and dissolved or filtered fractions.</em>`,
   },
   metal: {
     title: 'Metal(oids)',
@@ -93,8 +93,8 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
 
 • Arsenic, cadmium, chromium, lead, and mercury are toxic even at very low concentrations. These elements are highest in waters influenced by industrial discharges and mining. Mercury is of special concern because it bioaccumulates in the food chain.
 • Copper, nickel, selenium, and zinc are used in small amounts by plants and animals. However, high concentrations from improper fertilizer use, industrial pollution, or mining can cause toxicity.
-• Aluminum, barium, and iron are all very common in the Earth's crust and usually harmless in the water, but are indicators of geologic processes such as interactions with groundwater or acid mine drainage. At low pH, these elements become more toxic.
-*Metals are measured both as total or unfiltered concentration and dissolved or filtered fractions.`,
+• Aluminum, barium, iron, and manganese are all very common in the Earth's crust and usually harmless in the water, but are indicators of geologic processes such as interactions with groundwater or acid mine drainage. At low pH, these elements become more toxic.
+<em>*Metals are measured both as total or unfiltered and dissolved or filtered fractions.</em>`,
   },
 }
 
@@ -255,7 +255,7 @@ function WaterChemistry() {
         {description && (
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
             <h3 className="text-xl font-bold text-foreground mb-2">{description.title}</h3>
-            <div className="text-base whitespace-pre-line">{description.content}</div>
+            <div className="text-base whitespace-pre-line" dangerouslySetInnerHTML={{ __html: description.content }} />
           </div>
         )}
       </div>

@@ -88,9 +88,10 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
   ipms: {
     title: 'Element Scan',
     content: `Soils reflect the elemental geology of a region, which can be determined using mass spectrometry to measure elemental concentrations in the soil. The elements that accumulate in soils also reflect longer-term patterns of chemistry as contaminants are bound to and buried in soils.
-• <strong>Arsenic</strong>, <strong>cadmium</strong>, <strong>copper</strong>, <strong>nickel</strong>, <strong>lead</strong>, <strong>mercury</strong>, <strong>selenium</strong>, and <strong>zinc</strong> are metals and metalloids that indicate a history of contamination from industrial and residential sources. Arsenic and selenium are particularly concerning because they are toxic to wildlife that feed in wetlands.
-• <strong>Potassium</strong>, <strong>calcium</strong>, <strong>magnesium</strong>, and <strong>sulfur</strong> are important plant macronutrients.
-• <strong>Boron</strong>, <strong>copper</strong>, <strong>iron</strong>, <strong>manganese</strong>, <strong>molybdenum</strong>, <strong>nickel</strong>, and <strong>zinc</strong> are critical micronutrients for plants.`,
+• <strong>Arsenic</strong>, <strong>barium</strong>, <strong>cadmium</strong>, <strong>chromium</strong>, <strong>cobalt</strong>, <strong>copper</strong>, <strong>lead</strong>, <strong>mercury</strong>, <strong>nickel</strong>, <strong>selenium</strong>, and <strong>zinc</strong> are metals and metalloids that indicate a history of contamination from industrial and residential sources. Arsenic and selenium are particularly concerning because they are toxic to wildlife that feed in wetlands.
+• <strong>Calcium</strong>, <strong>magnesium</strong>, <strong>phosphorus</strong>, <strong>potassium</strong>, and <strong>sulfur</strong> are important plant macronutrients.
+• <strong>Boron</strong>, <strong>copper</strong>, <strong>iron</strong>, <strong>manganese</strong>, <strong>molybdenum</strong>, <strong>nickel</strong>, and <strong>zinc</strong> are critical micronutrients for plants.
+• <strong>Aluminum</strong>, <strong>calcium</strong>, <strong>iron</strong>, <strong>magnesium</strong>, <strong>manganese</strong>, <strong>phosphorus</strong>, <strong>potassium</strong>, <strong>sodium</strong>, <strong>strontium</strong>, and <strong>sulfur</strong> are common rock-forming elements in the Earth's crust.`,
   },
 }
 

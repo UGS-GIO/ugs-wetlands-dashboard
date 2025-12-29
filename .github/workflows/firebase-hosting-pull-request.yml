@@ -1,0 +1,34 @@
+name: Deploy to Firebase Hosting on PR Preview
+
+on: pull_request
+
+jobs:
+  build_and_preview:
+    # Only run on PRs from the same repository, not external forks
+    if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting Preview Channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_UT_DNR_UGS_WTLNDS_DATAXPLR_DEV }}'
+          projectId: 'ut-dnr-ugs-wtlnds-dataxplr-dev'
+          target: main-site
+          channelId: pr-${{ github.event.number }}
+          expires: 7d

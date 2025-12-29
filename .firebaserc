@@ -1,0 +1,23 @@
+{
+  "projects": {
+    "default": "ut-dnr-ugs-wtlnds-dataxplr-dev",
+    "production": "ut-dnr-ugs-wtlnds-dataxplr-prod"
+  },
+  "targets": {
+    "ut-dnr-ugs-wtlnds-dataxplr-prod": {
+      "hosting": {
+        "main-site": [
+          "ut-dnr-ugs-wtlnds-dataxplr-prod"
+        ]
+      }
+    },
+    "ut-dnr-ugs-wtlnds-dataxplr-dev": {
+      "hosting": {
+        "main-site": [
+          "ut-dnr-ugs-wtlnds-dataxplr-dev"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
