@@ -29,8 +29,8 @@ jobs:
       - name: Set Firebase Environment Variables
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "FIREBASE_SERVICE_ACCOUNT_SECRET_NAME=FIREBASE_SERVICE_ACCOUNT_UT_DNR_UGS_WTLNDS_DATAXPLR_PROD" >> $GITHUB_ENV
-            echo "PROJECT_ID=ut-dnr-ugs-wtlnds-dataxplr-prod" >> $GITHUB_ENV
+            echo "FIREBASE_SERVICE_ACCOUNT_SECRET_NAME=FIREBASE_SERVICE_ACCOUNT_UT_DNR_UGS_WTLNDS_DATAXPLR_PRD" >> $GITHUB_ENV
+            echo "PROJECT_ID=ut-dnr-ugs-wtlnds-dataxplr-prd" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "FIREBASE_SERVICE_ACCOUNT_SECRET_NAME=FIREBASE_SERVICE_ACCOUNT_UT_DNR_UGS_WTLNDS_DATAXPLR_DEV" >> $GITHUB_ENV
             echo "PROJECT_ID=ut-dnr-ugs-wtlnds-dataxplr-dev" >> $GITHUB_ENV
