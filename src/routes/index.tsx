@@ -199,13 +199,13 @@ function Home() {
 
         <ul className="list-disc ml-6">
           <li>
-            <strong>Watersheds</strong>: The climate, topography, hydrology, and geology of a watershed determine where wetlands are located and what type of wetlands exist there. The United States is divided into Hydrologic Unit Codes (HUC's), with longer codes (2-12 digits) showing higher resolution of shared water sources. We are showing data in 6-digit Basin codes.
+            <strong>Watersheds</strong>: The climate, topography, hydrology, and geology of a watershed determine where wetlands are located and what type of wetlands exist there. The United States is divided into <a href="https://www.arcgis.com/home/item.html?id=5bbefdcd2511472ea9abd0afedb85c7e" target="_blank" rel="noopener" className="text-primary">Hydrologic Unit Codes</a> (HUC's), with longer codes (2-12 digits) showing higher resolution of shared water sources. We are showing data in 6-digit Basin codes.
           </li>
           <li>
-            <strong>Ecoregions</strong>: The U.S. is also divided into ecoregions, which are areas that support similar ecosystems because they have the same landforms, climate, biological communities, and land uses. Utah is very ecologically diverse and supports seven Level III ecoregions, from the arid Colorado Plateau to the high elevation Wasatch and Uinta Mountains.
+            <strong>Ecoregions</strong>: The U.S. is also divided into <a href="https://www.epa.gov/eco-research/ecoregions" target="_blank" rel="noopener" className="text-primary">ecoregions</a>, which are areas that support similar ecosystems because they have the same landforms, climate, biological communities, and land uses. Utah is very ecologically diverse and supports seven Level III ecoregions, from the arid Colorado Plateau to the high elevation Wasatch and Uinta Mountains.
           </li>
           <li>
-            <strong>Wetland Type</strong>: Wetlands can be grouped in several ways, here we are lumping them together by their dominant vegetation type, following the classes developed by Cowardin for the U.S. Fish and Wildlife Service.
+            <strong>Wetland Type</strong>: Wetlands can be grouped in several ways, here we are lumping them together by their dominant vegetation type, following the classes developed by <a href="https://www.fws.gov/media/national-wetland-inventory-wetlands-and-deepwater-map-code-diagram" target="_blank" rel="noopener" className="text-primary">Cowardin</a> for the U.S. Fish and Wildlife Service.
           </li>
         </ul>
       </div>
