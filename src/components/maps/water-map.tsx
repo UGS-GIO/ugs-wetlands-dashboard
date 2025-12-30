@@ -216,7 +216,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
           <button
             onClick={() => setBasemap('light')}
             className={`px-3 py-2 text-sm font-medium transition-colors ${
-              basemap === 'light' ? 'bg-ugs-gold text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
+              basemap === 'light' ? 'bg-primary text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
             Light
@@ -224,7 +224,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
           <button
             onClick={() => setBasemap('dark')}
             className={`px-3 py-2 text-sm font-medium transition-colors ${
-              basemap === 'dark' ? 'bg-ugs-gold text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
+              basemap === 'dark' ? 'bg-primary text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
             }`}
           >
             Dark

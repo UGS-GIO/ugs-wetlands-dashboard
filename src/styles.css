@@ -4,9 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-ugs-gold: #e6951c;
   --color-ugs-dark: #1B1B1B;
   --color-ugs-dark-alt: #2B2B2B;
+  --color-gray-400: #AAAAAA;
   --color-gray-500: #999;
   --color-gray-700: #444;
   --color-gray-800: #2B2B2B;
@@ -22,7 +22,7 @@
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --primary: 32 83% 50%;
+    --primary: 40 100% 45%;
     --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 95%;
     --secondary-foreground: 0 0% 10%;
@@ -64,7 +64,7 @@
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 17%;
     --popover-foreground: 0 0% 100%;
-    --primary: 32 83% 50%;
+    --primary: 40 100% 45%;
     --primary-foreground: 0 0% 0%;
     --secondary: 0 0% 17%;
     --secondary-foreground: 0 0% 100%;

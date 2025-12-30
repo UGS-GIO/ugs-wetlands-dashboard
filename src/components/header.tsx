@@ -21,7 +21,7 @@ export default function Header() {
           <a href="https://geology.utah.gov/water/wetlands/" target="_blank" rel="noopener noreferrer">
             <img src={`${import.meta.env.BASE_URL}images/ugs_logo_large.png`} alt="UGS Logo" className="h-8 md:h-10" />
           </a>
-          <div className="text-lg md:text-2xl font-bold text-white">
+          <div className="text-lg md:text-2xl font-bold text-foreground">
             Utah Wetland Data Explorer
           </div>
         </div>
@@ -33,10 +33,8 @@ export default function Header() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="block px-4 py-1 text-white no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-[#AAAAAA]"
-                activeProps={{
-                  className: "block px-4 py-1 text-white no-underline border-b-2 border-[#e69800] transition-all duration-200 text-base text-center"
-                }}
+                className="block px-4 py-1 text-foreground no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-gray-400 [&.active]:border-primary"
+                activeOptions={{ exact: link.to === '/' }}
               >
                 {link.label}
               </Link>
@@ -68,10 +66,8 @@ export default function Header() {
               <Link
                 key={link.to}
                 to={link.to}
-                className="block px-4 py-3 text-white no-underline rounded-lg transition-all duration-200 text-base hover:bg-[#AAAAAA]/20"
-                activeProps={{
-                  className: "block px-4 py-3 text-white no-underline rounded-lg bg-[#e69800]/20 border-l-4 border-[#e69800] transition-all duration-200 text-base"
-                }}
+                className="block px-4 py-3 text-foreground no-underline rounded-lg transition-all duration-200 text-base hover:bg-gray-400/20 [&.active]:bg-primary/20 [&.active]:border-l-4 [&.active]:border-primary"
+                activeOptions={{ exact: link.to === '/' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
