@@ -218,11 +218,11 @@ export function transformWaterData(
     paramStats[param] = { mean, std }
   })
 
-  // Mark outliers where z-score > 3
+  // Mark outliers where z-score > 3 (only high outliers, matching R Shiny)
   transformed.forEach((w) => {
     const stats = paramStats[w.parameter]
     if (stats && stats.std > 0) {
-      const zScore = Math.abs((w.value - stats.mean) / stats.std)
+      const zScore = (w.value - stats.mean) / stats.std
       w.isOutlier = zScore > 3
     }
   })

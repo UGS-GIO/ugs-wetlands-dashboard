@@ -73,27 +73,27 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
     title: 'General Chemistry',
     content: `General Chemistry parameters describe the basic chemistry of a wetland. Changes in these parameters can indicate changes in water quality. Aquatic organisms are adapted to life within specific ranges of conductivity, pH, and temperature.
 
-• Conductivity is a measure of how salty water is. Water with more salts will have higher measures of conductivity. Utah wetlands vary significantly in conductivity, from freshwater alpine ponds to hypersaline Great Salt Lake playas.
-• pH measures the acidity (pH < 7) or alkalinity (pH > 7) of water. Some pollutants will drive steep changes in pH.
-• Dissolved oxygen is the amount of oxygen available for aquatic animals to breathe. Decomposition of plants and algae associated with excessive nutrient concentration lowers dissolved oxygen in water.
-• Temperature determines which organisms can survive in wetlands because temperature regulates metabolic processes. Temperature also influences water chemistry, especially how much dissolved gases water can hold.`,
+• <strong>Conductivity</strong> is a measure of how salty water is. Water with more salts will have higher measures of conductivity. Utah wetlands vary significantly in conductivity, from freshwater alpine ponds to hypersaline Great Salt Lake playas.
+• <strong>pH</strong> measures the acidity (pH < 7) or alkalinity (pH > 7) of water. Some pollutants will drive steep changes in pH.
+• <strong>Dissolved oxygen</strong> is the amount of oxygen available for aquatic animals to breathe. Decomposition of plants and algae associated with excessive nutrient concentration lowers dissolved oxygen in water.
+• <strong>Temperature</strong> determines which organisms can survive in wetlands because temperature regulates metabolic processes. Temperature also influences water chemistry, especially how much dissolved gases water can hold.`,
   },
   nuts: {
     title: 'Nutrients',
     content: `Nutrients are the compounds plants need to grow and are cycled through the environment between water, soils, plants, and animals. Wetlands are nutrient cycling hotspots because of the chemical reactions that happen where oxygenated water and soils meet anoxic zones. Though they are necessary for life, too much nitrogen, phosphorus, or carbon, including the elements in excess fertilizer runoff, can throw off the balance of an ecosystem, favoring rapidly growing plants and animals.
 
-• Carbon is the basis for all life and is found in innumerable chemical forms. We measure organic material in wetlands as organic carbon and biological oxygen demand. The first is a measure of how much organic matter is in the water, and the second is a measure of how much microbial energy is needed to decompose that matter.
-• Nitrogen is necessary for making proteins and conducting photosynthesis, and is the element that most often limits plant growth and productivity. Two forms of nitrogen are measured in wetlands: nitrate, which is more common in well-oxygenated water, and ammonia, which is more common in anoxic waters.
-• Phosphorus is required for metabolism and reproduction in plants, and it is a common component of fertilizers as well as human waste. Phosphate (PO₄) is the most commonly measured form of phosphorus.
+• <strong>Carbon</strong> is the basis for all life and is found in innumerable chemical forms. We measure organic material in wetlands as organic carbon and biological oxygen demand. The first is a measure of how much organic matter is in the water, and the second is a measure of how much microbial energy is needed to decompose that matter.
+• <strong>Nitrogen</strong> is necessary for making proteins and conducting photosynthesis, and is the element that most often limits plant growth and productivity. Two forms of nitrogen are measured in wetlands: nitrate, which is more common in well-oxygenated water, and ammonia, which is more common in anoxic waters.
+• <strong>Phosphorus</strong> is required for metabolism and reproduction in plants, and it is a common component of fertilizers as well as human waste. Phosphate (PO₄) is the most commonly measured form of phosphorus.
 <em>*Nutrients are measured both as total or unfiltered and dissolved or filtered fractions.</em>`,
   },
   metal: {
     title: 'Metal(oids)',
     content: `Metals and Metalloids are elements that are naturally found in the Earth's crust and waterways. Human activities like irrigation, manufacturing, and driving vehicles concentrate those elements in waterways. Some metals and metalloids are toxic to wildlife and humans, leading to death and deformities. Others accumulate in animal fats and cause birth defects or death at higher trophic levels. Many elements are critical micronutrients for plants and animals, and only become impactful at high concentrations.
 
-• Arsenic, cadmium, chromium, lead, and mercury are toxic even at very low concentrations. These elements are highest in waters influenced by industrial discharges and mining. Mercury is of special concern because it bioaccumulates in the food chain.
-• Copper, nickel, selenium, and zinc are used in small amounts by plants and animals. However, high concentrations from improper fertilizer use, industrial pollution, or mining can cause toxicity.
-• Aluminum, barium, iron, and manganese are all very common in the Earth's crust and usually harmless in the water, but are indicators of geologic processes such as interactions with groundwater or acid mine drainage. At low pH, these elements become more toxic.
+• <strong>Arsenic</strong>, <strong>cadmium</strong>, <strong>chromium</strong>, <strong>lead</strong>, and <strong>mercury</strong> are toxic even at very low concentrations. These elements are highest in waters influenced by industrial discharges and mining. Mercury is of special concern because it bioaccumulates in the food chain.
+• <strong>Copper</strong>, <strong>nickel</strong>, <strong>selenium</strong>, and <strong>zinc</strong> are used in small amounts by plants and animals. However, high concentrations from improper fertilizer use, industrial pollution, or mining can cause toxicity.
+• <strong>Aluminum</strong>, <strong>barium</strong>, <strong>iron</strong>, and <strong>manganese</strong> are all very common in the Earth's crust and usually harmless in the water, but are indicators of geologic processes such as interactions with groundwater or acid mine drainage. At low pH, these elements become more toxic.
 <em>*Metals are measured both as total or unfiltered and dissolved or filtered fractions.</em>`,
   },
 }
@@ -129,7 +129,8 @@ function WaterChemistry() {
   // Filter data based on selected parameter
   const filteredData = waterData.filter((d) => d.label === parameter)
 
-  // Filter out outliers for visualization (matching R Shiny behavior)
+  // Filter out outliers for visualization (z-score > 3)
+  // Note: R Shiny app has a bug where outliers get added back (line 623), but we implement correct behavior
   // Outliers are still included in downloads
   const chartData = filteredData.filter((d) => !d.isOutlier)
 
