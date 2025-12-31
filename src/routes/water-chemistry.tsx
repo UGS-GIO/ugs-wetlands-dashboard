@@ -129,8 +129,7 @@ function WaterChemistry() {
   // Filter data based on selected parameter
   const filteredData = waterData.filter((d) => d.label === parameter)
 
-  // Filter out outliers for visualization (z-score > 3)
-  // Note: R Shiny app has a bug where outliers get added back (line 623), but we implement correct behavior
+  // Filter out outliers (z-score > 3) for cleaner visualizations
   // Outliers are still included in downloads
   const chartData = filteredData.filter((d) => !d.isOutlier)
 
