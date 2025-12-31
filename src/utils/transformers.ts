@@ -1,4 +1,15 @@
 import { classifyHuc, classifyWetland } from './classify'
+import type {
+  WaterRecord,
+  WaterParam,
+  SoilRecord,
+  SoilParam,
+  SiteAttribute,
+  InvertRecord,
+  InvertTaxon,
+  FlagRecord,
+} from './queries'
+import type { WaterData, WaterParamWithCriteria, SoilData, InvertMetric, CommunityData } from '../types'
 
 /**
  * Normalize units to use capital L for liters, µ for micro, and ° for degrees
@@ -13,17 +24,6 @@ function normalizeUnits(units: string): string {
     .replace(/^umhos\//i, 'µmhos/') // umhos/cm -> µmhos/cm
     .replace(/^C$/i, '°C')       // C -> °C (Celsius)
 }
-import type {
-  WaterRecord,
-  WaterParam,
-  SoilRecord,
-  SoilParam,
-  SiteAttribute,
-  InvertRecord,
-  InvertTaxon,
-  FlagRecord,
-} from './queries'
-import type { WaterData, WaterParamWithCriteria, SoilData, InvertMetric, CommunityData } from '../types'
 
 // Water quality criteria thresholds
 const WQ_CRITERIA: Record<string, { acute: number; chronic: number }> = {
@@ -42,7 +42,7 @@ const WQ_CRITERIA: Record<string, { acute: number; chronic: number }> = {
   nh4_d: { acute: 0.8, chronic: 0.8 },
 }
 
-// Bug type consolidation mapping (matching R Shiny app)
+// Bug type consolidation mapping
 const BUG_TYPE_GROUP_MAP: Record<string, string> = {
   snail: 'Snails',
   spring_snail: 'Snails',
@@ -96,11 +96,11 @@ function filterSites(sites: SiteAttribute[]): SiteAttribute[] {
 
 /**
  * Add site attributes to a record
- * Returns null if site not found or lacks coordinates (matching R Shiny's filter behavior)
+ * Returns null if site not found or lacks coordinates
  */
 function addSiteAttributes(siteid: string, sites: SiteAttribute[]) {
   const site = sites.find((s) => s.siteid === siteid)
-  // Filter out records without valid lat/lon (matching R Shiny's add_spatial_geometry)
+  // Filter out records without valid lat/lon
   if (!site || site.latitude == null || site.longitude == null) {
     return null
   }
@@ -142,7 +142,7 @@ export function transformWaterParams(params: WaterParam[]): WaterParamWithCriter
 
 /**
  * Transform raw water records into enriched water data
- * Marks outliers (z-score > 3) for visualization filtering (matching R Shiny)
+ * Marks outliers (z-score > 3) for visualization filtering
  */
 export function transformWaterData(
   records: WaterRecord[],
@@ -218,7 +218,7 @@ export function transformWaterData(
     paramStats[param] = { mean, std }
   })
 
-  // Mark outliers where z-score > 3 (only high outliers, matching R Shiny)
+  // Mark outliers where z-score > 3 (high outliers only, for cleaner visualizations)
   transformed.forEach((w) => {
     const stats = paramStats[w.parameter]
     if (stats && stats.std > 0) {
