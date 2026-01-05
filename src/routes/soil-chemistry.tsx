@@ -117,6 +117,7 @@ function SoilChemistry() {
   const [downloadGroups, setDownloadGroups] = useState<(keyof typeof DOWNLOAD_GROUP_OPTIONS)[]>(['gennuts'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [showOutliers, setShowOutliers] = useState(false)
+  const [showFlagged, setShowFlagged] = useState(false)
 
   // Update parameter when category changes
   useEffect(() => {
@@ -124,9 +125,13 @@ function SoilChemistry() {
     setParameter(firstParam)
   }, [category])
 
+  // Check if current parameter is nitrate (has flagged values)
+  const isNitrateParam = ['no3n_s', 'no3n_e'].includes(parameter)
+  const flaggedCount = soilData.filter((d) => d.parameter === parameter && d.flag).length
+
   // Filter data based on selected parameter (by parameter code)
-  // Always exclude flagged values (e.g., negative nitrate) from visualizations
-  const filteredData = soilData.filter((d) => d.parameter === parameter && !d.flag)
+  // Exclude flagged values unless showFlagged is true
+  const filteredData = soilData.filter((d) => d.parameter === parameter && (showFlagged || !d.flag))
 
   // Count outliers and conditionally filter them
   const outlierCount = filteredData.filter((d) => d.isOutlier).length
@@ -211,6 +216,18 @@ function SoilChemistry() {
                   ))}
                 </SelectContent>
               </Select>
+              {isNitrateParam && flaggedCount > 0 && (
+                <div className="mt-2 flex items-center gap-2">
+                  <Checkbox
+                    id="show-negative"
+                    checked={showFlagged}
+                    onCheckedChange={(checked) => setShowFlagged(checked === true)}
+                  />
+                  <label htmlFor="show-negative" className="text-xs text-muted-foreground cursor-pointer">
+                    Show {flaggedCount} negative value{flaggedCount !== 1 ? 's' : ''}
+                  </label>
+                </div>
+              )}
             </div>
 
             <div>
