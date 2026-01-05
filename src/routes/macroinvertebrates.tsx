@@ -51,6 +51,12 @@ const PARAMETER_UNITS: Record<string, string> = {
   eto_rel: '%',
 }
 
+const COMMUNITY_DESCRIPTIONS: Record<string, string> = {
+  feed_grp: `Diversity in macroinvertebrate communities is reflected in diverse <strong>feeding groups</strong>. Some collect food by filtering water or gathering from surfaces. Snails and others scrape algae from soils and plants. Some macroinvertebrates eat plants by shredding or piercing them. Still others are predators, consuming smaller macroinvertebrates.`,
+  bug_type: `Exploring the <strong>types of macroinvertebrates</strong> shows more of the differences between the types of wetlands. Some wetland types may be better habitat for the larvae of flying insects that will later hatch, while others support beetles and isopods that live their whole lives in water.`,
+  arthropod: `<strong>Arthropods</strong> -- the class of macroinvertebrates with hard exoskeletons -- are among the most diverse animal groups in the world and wetland arthropod communities are no exception.`,
+}
+
 export const Route = createFileRoute('/macroinvertebrates')({
   component: Macroinvertebrates,
 })
@@ -231,66 +237,58 @@ function Macroinvertebrates() {
           functions. Use the dropdown below to explore the relative abundance of feeding groups, types of
           macroinvertebrates, and types of arthropods.
         </p>
-        <ul className="list-disc ml-6 mb-4 text-base space-y-2">
-          <li>
-            Diversity in macroinvertebrate communities is reflected in diverse <strong>feeding groups</strong>. Some
-            collect food by filtering water or gathering from surfaces. Snails and others scrape algae from soils and
-            plants. Some macroinvertebrates eat plants by shredding or piercing them. Still others are predators,
-            consuming smaller macroinvertebrates.
-          </li>
-          <li>
-            Exploring the <strong>types of macroinvertebrates</strong> shows more of the differences between the types
-            of wetlands. Some wetland types may be better habitat for the larvae of flying insects that will later
-            hatch, while others support beetles and isopods that live their whole lives in water.
-          </li>
-          <li>
-            <strong>Arthropods</strong> -- the class of macroinvertebrates with hard exoskeletons -- are among the most
-            diverse animal groups in the world and wetland arthropod communities are no exception.
-          </li>
-        </ul>
-        <p className="text-sm text-muted-foreground italic mb-4">
+        <p className="text-sm text-muted-foreground italic">
           *Some group totals do not add up to 100%. This is due to taking an average of relative abundance within each subpopulation. Feeding groups, invertebrate types, and orders with few individuals are not visible when site abundances are high.
         </p>
       </div>
 
-      {/* Community Dropdowns */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      {/* Community Dropdowns and Description */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
-          <label className="block text-sm font-medium mb-2">Community Metrics</label>
-          <Select
-            value={communityParam}
-            onValueChange={(value) => setCommunityParam(value as keyof typeof COMMUNITY_OPTIONS)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(COMMUNITY_OPTIONS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Community Metrics</label>
+              <Select
+                value={communityParam}
+                onValueChange={(value) => setCommunityParam(value as keyof typeof COMMUNITY_OPTIONS)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(COMMUNITY_OPTIONS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Grouping</label>
+              <Select
+                value={communityGrouping}
+                onValueChange={(value) => setCommunityGrouping(value as keyof typeof GROUPING_OPTIONS)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(GROUPING_OPTIONS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-4">
-          <label className="block text-sm font-medium mb-2">Grouping</label>
-          <Select
-            value={communityGrouping}
-            onValueChange={(value) => setCommunityGrouping(value as keyof typeof GROUPING_OPTIONS)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(GROUPING_OPTIONS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
+          <h3 className="text-xl font-bold text-foreground mb-2">{COMMUNITY_OPTIONS[communityParam]}</h3>
+          <div className="text-base" dangerouslySetInnerHTML={{ __html: COMMUNITY_DESCRIPTIONS[communityParam] }} />
         </div>
       </div>
 
