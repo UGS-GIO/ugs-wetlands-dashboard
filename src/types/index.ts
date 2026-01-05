@@ -77,6 +77,7 @@ export interface SoilData extends WithSiteAttributes {
   definition?: string
   method?: string
   mdl?: number
+  flag?: string
   huc_name?: string
   project?: string
   name?: string

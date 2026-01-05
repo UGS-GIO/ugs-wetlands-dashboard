@@ -264,6 +264,10 @@ export function transformSoilData(
       if (SOIL_GENNUTS_PARAMS.includes(s.parameter)) category = 'gennuts'
       else if (SOIL_IPMS_PARAMS.includes(s.parameter)) category = 'ipms'
 
+      // Flag negative nitrate values
+      const isNegativeNitrate = ['no3n_s', 'no3n_e'].includes(s.parameter) && s.value < 0
+      const flag = isNegativeNitrate ? 'negative' : undefined
+
       const result: SoilData = {
         ...s,
         units: normalizeUnits(param.units || ''),
@@ -272,14 +276,13 @@ export function transformSoilData(
         definition: param.definition,
         method: param.method,
         mdl: param.mdl,
+        flag,
         ...siteAttrs,
         isOutlier: false,
       }
       return result
     })
     .filter((s): s is SoilData => s !== null && !isNaN(s.value))
-    // Filter out negative nitrate values (will be handled as data flags later)
-    .filter((s) => !(['no3n_s', 'no3n_e'].includes(s.parameter) && s.value < 0))
 
   // Mark outliers (z-score > 3) for visualization filtering
   const paramStats: Record<string, { mean: number; std: number }> = {}
