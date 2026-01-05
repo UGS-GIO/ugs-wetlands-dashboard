@@ -40,9 +40,9 @@ const DOWNLOAD_GROUP_OPTIONS = {
   toxic: 'Metal(oids)',
 }
 
-// Map download group keys to actual database categories
+// Map download group keys to database categories
 const DOWNLOAD_CATEGORY_MAP: Record<string, string[]> = {
-  genchem: ['genchem', 'polind'],
+  genchem: ['genchem'],
   nuts: ['nuts'],
   toxic: ['toxic'],
 }

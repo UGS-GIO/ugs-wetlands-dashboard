@@ -120,17 +120,24 @@ function addSiteAttributes(siteid: string, sites: SiteAttribute[]) {
 /**
  * Transform water parameters with label fixes and criteria
  */
+// Parameters that should be recategorized from polind to genchem
+const POLIND_TO_GENCHEM = ['do_conc', 'do_sat', 'ph', 'temp', 'ec25']
+
 export function transformWaterParams(params: WaterParam[]): WaterParamWithCriteria[] {
   return params.map((p) => {
     let label = p.label
     if (p.parameter === 'ph') label = 'pH'
     if (p.parameter === 'do_sat') label = 'Dissolved Oxygen 2'
     if (p.parameter === 'do_conc') label = 'Dissolved Oxygen'
-    if (p.parameter === 'po4_d') label = 'Phosphate-P'
+    if (p.parameter === 'po4_d' || p.parameter === 'po4_t') label = 'Phosphate-P'
+
+    // Recategorize polind parameters to genchem for General Chemistry grouping
+    const category = POLIND_TO_GENCHEM.includes(p.parameter) ? 'genchem' : p.category
 
     return {
       ...p,
       label,
+      category,
       acute: WQ_CRITERIA[p.parameter]?.acute,
       chronic: WQ_CRITERIA[p.parameter]?.chronic,
       mdl: p.mdl,
