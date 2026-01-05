@@ -214,6 +214,9 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
       .attr('fill', chartText)
       .attr('font-size', '12px')
 
+    // Add spacing between tick marks and labels
+    xAxisGroup.selectAll('.tick text').attr('transform', 'translate(0, 8)')
+
     xAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
     xAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
 
@@ -263,7 +266,7 @@ export default function CommunityPlot({ data, groupBy, metric }: CommunityPlotPr
       .attr('y', height + margin.bottom - 10)
       .attr('text-anchor', 'middle')
       .attr('fill', chartCaption)
-      .attr('font-size', '10px')
+      .attr('font-size', '12px')
       .text(`Mean relative abundance of ${metric.toLowerCase()} across ${groupBy}`)
   }, [data, groupBy, metric, theme, containerWidth])
 

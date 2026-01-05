@@ -81,6 +81,7 @@ export interface SoilData extends WithSiteAttributes {
   project?: string
   name?: string
   date?: string
+  isOutlier?: boolean
 }
 
 // Macroinvertebrate types
@@ -90,6 +91,7 @@ export interface InvertMetric extends WithSiteAttributes {
   value: number
   units: string
   label: string
+  isOutlier?: boolean
 }
 
 export interface CommunityData extends WithSiteAttributes {

@@ -21,6 +21,7 @@ import {
   flagsQueryOptions,
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
+import OutlierBanner from '../components/outlier-banner'
 import { transformWaterParams, transformWaterData } from '../utils/transformers'
 import type { WaterData } from '../types'
 import { GROUPING_OPTIONS, type GroupingKey } from '../types'
@@ -119,6 +120,7 @@ function WaterChemistry() {
   const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
   const [downloadGroups, setDownloadGroups] = useState<(keyof typeof DOWNLOAD_GROUP_OPTIONS)[]>(['genchem'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
+  const [showOutliers, setShowOutliers] = useState(false)
 
   // Update parameter when category changes
   useEffect(() => {
@@ -129,9 +131,9 @@ function WaterChemistry() {
   // Filter data based on selected parameter
   const filteredData = waterData.filter((d) => d.label === parameter)
 
-  // Filter out outliers (z-score > 3) for cleaner visualizations
-  // Outliers are still included in downloads
-  const chartData = filteredData.filter((d) => !d.isOutlier)
+  // Count outliers and conditionally filter them
+  const outlierCount = filteredData.filter((d) => d.isOutlier).length
+  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
 
   // Get parameter metadata
   const paramMeta = waterParams.find((p) => p.label === parameter)
@@ -248,6 +250,7 @@ function WaterChemistry() {
                 </SelectContent>
               </Select>
             </div>
+
           </div>
         </div>
 
@@ -259,6 +262,12 @@ function WaterChemistry() {
           </div>
         )}
       </div>
+
+      <OutlierBanner
+        outlierCount={outlierCount}
+        showOutliers={showOutliers}
+        onToggle={() => setShowOutliers(!showOutliers)}
+      />
 
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">

@@ -56,10 +56,10 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    const containerHeight = 450
+    const containerHeight = 490
 
     // Dimensions
-    const margin = { top: 30, right: 30, bottom: 60, left: 80 }
+    const margin = { top: 30, right: 30, bottom: 100, left: 80 }
     const width = containerWidth - margin.left - margin.right
     const height = containerHeight - margin.top - margin.bottom
 
@@ -147,6 +147,9 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
       .style('text-anchor', 'middle')
       .attr('fill', chartText)
       .attr('font-size', '13px')
+
+    // Add spacing between tick marks and labels
+    xAxisGroup.selectAll('.tick text').attr('transform', 'translate(0, 8)')
 
     xAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
     xAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
@@ -312,7 +315,7 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
       .attr('y', height + margin.bottom - 5)
       .attr('text-anchor', 'middle')
       .attr('fill', chartCaption)
-      .attr('font-size', '10px')
+      .attr('font-size', '12px')
       .text(`Boxplot (25-75th percentile) of ${parameter} across ${groupBy}s`)
   }, [data, groupBy, parameter, units, hlineValue, theme, containerWidth])
 

@@ -69,7 +69,7 @@ export default function Histogram({
     // Clear previous chart
     d3.select(svgRef.current).selectAll('*').remove()
 
-    const containerHeight = facetBy ? 450 : 400
+    const containerHeight = facetBy ? 490 : 440
 
     // Determine facets
     const facets = facetBy
@@ -78,7 +78,7 @@ export default function Histogram({
     const numFacets = facets.length
 
     // Dimensions - adjust for faceting (reduced right margin since legend is inside)
-    const margin = { top: 30, right: 30, bottom: 60, left: 80 }
+    const margin = { top: 30, right: 30, bottom: 100, left: 80 }
     const totalWidth = containerWidth - margin.left - margin.right
     const facetWidth = numFacets > 1 ? (totalWidth - 20 * (numFacets - 1)) / numFacets : totalWidth
     const height = containerHeight - margin.top - margin.bottom
@@ -174,7 +174,7 @@ export default function Histogram({
       const xAxis = d3.axisBottom(xScale).ticks(5)
       const xAxisGroup = facetGroup.append('g').attr('class', 'x-axis').attr('transform', `translate(0,${height})`).call(xAxis)
 
-      xAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '12px')
+      xAxisGroup.selectAll('.tick text').attr('fill', chartText).attr('font-size', '12px').attr('transform', 'translate(0, 8)')
       xAxisGroup.selectAll('.domain').attr('stroke', chartAxis)
       xAxisGroup.selectAll('.tick line').attr('stroke', chartAxis)
 
@@ -248,7 +248,7 @@ export default function Histogram({
     svg
       .append('text')
       .attr('x', totalWidth / 2)
-      .attr('y', height + 42)
+      .attr('y', height + 55)
       .attr('text-anchor', 'middle')
       .attr('fill', chartText)
       .attr('font-size', '13px')
@@ -311,7 +311,7 @@ export default function Histogram({
       .attr('y', height + margin.bottom - 5)
       .attr('text-anchor', 'middle')
       .attr('fill', chartCaption)
-      .attr('font-size', '10px')
+      .attr('font-size', '12px')
       .style('max-width', '400px')
       .text(`Distribution of ${parameter} observations shaded by ${groupBy}`)
   }, [data, groupBy, parameter, units, vlineValue, facetBy, facetLabels, theme, containerWidth])
