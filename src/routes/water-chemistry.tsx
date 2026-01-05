@@ -33,11 +33,18 @@ const CATEGORY_OPTIONS = {
   metal: 'Metal(oids)',
 }
 
-// Download categories matching database category values
+// Download categories - maps to one or more database category values
 const DOWNLOAD_GROUP_OPTIONS = {
   genchem: 'General Chemistry',
   nuts: 'Nutrients',
-  toxic: 'Toxics',
+  toxic: 'Metal(oids)',
+}
+
+// Map download group keys to actual database categories
+const DOWNLOAD_CATEGORY_MAP: Record<string, string[]> = {
+  genchem: ['genchem', 'polind'],
+  nuts: ['nuts'],
+  toxic: ['toxic'],
 }
 
 // Map category selections to parameter labels (matching Shiny app)
@@ -355,7 +362,9 @@ function WaterChemistry() {
         onClose={() => setShowDisclaimer(false)}
         onAccept={() => {
           setShowDisclaimer(false)
-          const downloadData = waterData.filter((d) => downloadGroups.includes(d.category as keyof typeof DOWNLOAD_GROUP_OPTIONS))
+          // Get all database categories for selected download groups
+          const dbCategories = downloadGroups.flatMap(g => DOWNLOAD_CATEGORY_MAP[g] || [])
+          const downloadData = waterData.filter((d) => dbCategories.includes(d.category))
           const headers = ['siteid', 'parameter', 'value', 'units', 'flag', 'definition', 'mdl', 'lrl', 'method', 'category', 'Watershed', 'Ecoregion', 'Wetland Type', 'huc_name', 'project', 'date', 'name', 'latitude', 'longitude']
           downloadCSV(downloadData, `water-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
             switch (key) {
