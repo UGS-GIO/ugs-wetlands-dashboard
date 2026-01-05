@@ -19,10 +19,11 @@ function normalizeUnits(units: string): string {
   return units
     .replace(/\/l$/i, '/L')      // mg/l -> mg/L
     .replace(/\/l\b/gi, '/L')    // any /l followed by word boundary
-    .replace(/^ug\//i, 'µg/')    // ug/L -> µg/L
+    .replace(/^ug\//i, 'µg/')    // ug/L -> µg/L, ug/kg -> µg/kg
     .replace(/^uS\//i, 'µS/')    // uS/cm -> µS/cm
     .replace(/^umhos\//i, 'µmhos/') // umhos/cm -> µmhos/cm
     .replace(/^C$/i, '°C')       // C -> °C (Celsius)
+    .replace(/^percent$/i, '%')  // percent -> %
 }
 
 // Water quality criteria thresholds
