@@ -22,6 +22,7 @@ import {
   flagsQueryOptions,
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
+import { signif } from '../utils/format'
 import OutlierBanner from '../components/outlier-banner'
 import { transformInvertData } from '../utils/transformers'
 import type { InvertMetric } from '../types'
@@ -374,13 +375,6 @@ function SummaryTable({
     if (!grouped[group]) grouped[group] = []
     grouped[group].push(record.value)
   })
-
-  // Format to 3 significant figures (matching R's signif(., 3))
-  const signif = (n: number, digits: number = 3) => {
-    if (n === 0) return '0'
-    const val = parseFloat(n.toPrecision(digits))
-    return val >= 1000 ? val.toLocaleString() : val.toString()
-  }
 
   // Show all groups in summary table (matching R Shiny app)
   const stats = Object.entries(grouped)
