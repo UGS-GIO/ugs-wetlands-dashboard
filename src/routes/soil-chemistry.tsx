@@ -20,6 +20,7 @@ import {
   siteAttributesQueryOptions,
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
+import OutlierBanner from '../components/outlier-banner'
 import { transformSoilData } from '../utils/transformers'
 import type { SoilData } from '../types'
 import { GROUPING_OPTIONS, type GroupingKey } from '../types'
@@ -114,6 +115,7 @@ function SoilChemistry() {
   const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
   const [downloadGroups, setDownloadGroups] = useState<(keyof typeof DOWNLOAD_GROUP_OPTIONS)[]>(['gennuts'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
+  const [showOutliers, setShowOutliers] = useState(false)
 
   // Update parameter when category changes
   useEffect(() => {
@@ -123,6 +125,10 @@ function SoilChemistry() {
 
   // Filter data based on selected parameter (by parameter code)
   const filteredData = soilData.filter((d) => d.parameter === parameter)
+
+  // Count outliers and conditionally filter them
+  const outlierCount = filteredData.filter((d) => d.isOutlier).length
+  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
 
   // Get parameter metadata
   const paramMeta = soilParams.find((p) => p.parameter === parameter)
@@ -235,22 +241,28 @@ function SoilChemistry() {
         )}
       </div>
 
+      <OutlierBanner
+        outlierCount={outlierCount}
+        showOutliers={showOutliers}
+        onToggle={() => setShowOutliers(!showOutliers)}
+      />
+
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
         <h3 className="text-xl font-bold text-foreground mb-2">Spatial Patterns</h3>
-        <SoilMap data={filteredData} parameter={parameterLabel} units={paramMeta?.units || ''} />
+        <SoilMap data={chartData} parameter={parameterLabel} units={paramMeta?.units || ''} />
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Parameter Distribution</h3>
-          <Histogram data={filteredData} groupBy={grouping} parameter={parameterLabel} units={paramMeta?.units || ''} />
+          <Histogram data={chartData} groupBy={grouping} parameter={parameterLabel} units={paramMeta?.units || ''} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Group Comparison</h3>
-          <Boxplot data={filteredData} groupBy={grouping} parameter={parameterLabel} units={paramMeta?.units || ''} />
+          <Boxplot data={chartData} groupBy={grouping} parameter={parameterLabel} units={paramMeta?.units || ''} />
         </div>
       </div>
 
@@ -258,7 +270,7 @@ function SoilChemistry() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Summary Statistics</h3>
-          <SummaryTable data={filteredData} groupBy={grouping} units={paramMeta?.units || ''} />
+          <SummaryTable data={chartData} groupBy={grouping} units={paramMeta?.units || ''} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">

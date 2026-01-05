@@ -240,7 +240,7 @@ export function transformSoilData(
 ): SoilData[] {
   const filteredSites = filterSites(sites)
 
-  return records
+  const transformed = records
     .map((s) => {
       if (!s?.parameter || !s?.siteid || typeof s.value !== 'number') return null
       if (s.siteid.includes('_blank_')) return null
@@ -266,12 +266,39 @@ export function transformSoilData(
         method: param.method,
         mdl: param.mdl,
         ...siteAttrs,
+        isOutlier: false,
       }
       return result
     })
     .filter((s): s is SoilData => s !== null && !isNaN(s.value))
     // Filter out negative nitrate values (will be handled as data flags later)
     .filter((s) => !(['no3n_s', 'no3n_e'].includes(s.parameter) && s.value < 0))
+
+  // Mark outliers (z-score > 3) for visualization filtering
+  const paramStats: Record<string, { mean: number; std: number }> = {}
+  const paramValues: Record<string, number[]> = {}
+
+  transformed.forEach((s) => {
+    if (!paramValues[s.parameter]) paramValues[s.parameter] = []
+    paramValues[s.parameter].push(s.value)
+  })
+
+  Object.entries(paramValues).forEach(([param, values]) => {
+    const mean = values.reduce((a, b) => a + b, 0) / values.length
+    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length
+    const std = Math.sqrt(variance)
+    paramStats[param] = { mean, std }
+  })
+
+  transformed.forEach((s) => {
+    const stats = paramStats[s.parameter]
+    if (stats && stats.std > 0) {
+      const zScore = (s.value - stats.mean) / stats.std
+      s.isOutlier = zScore > 3
+    }
+  })
+
+  return transformed
 }
 
 /**
@@ -435,6 +462,32 @@ export function transformInvertData(
 
   // Arthropod orders
   const arthropodData = calcRelativeAbundance('order', 'arthropod', (t) => t.phylum === 'Arthropoda')
+
+  // Mark outliers (z-score > 3) for visualization filtering
+  const metricStats: Record<string, { mean: number; std: number }> = {}
+  const metricValues: Record<string, number[]> = {}
+
+  invertMetrics.forEach((m) => {
+    if (!metricValues[m.parameter]) metricValues[m.parameter] = []
+    metricValues[m.parameter].push(m.value)
+  })
+
+  Object.entries(metricValues).forEach(([param, values]) => {
+    const mean = values.reduce((a, b) => a + b, 0) / values.length
+    const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length
+    const std = Math.sqrt(variance)
+    metricStats[param] = { mean, std }
+  })
+
+  invertMetrics.forEach((m) => {
+    const stats = metricStats[m.parameter]
+    if (stats && stats.std > 0) {
+      const zScore = (m.value - stats.mean) / stats.std
+      m.isOutlier = zScore > 3
+    } else {
+      m.isOutlier = false
+    }
+  })
 
   return {
     invertMetrics,

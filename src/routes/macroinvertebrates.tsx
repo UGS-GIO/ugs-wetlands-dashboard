@@ -22,6 +22,7 @@ import {
   flagsQueryOptions,
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
+import OutlierBanner from '../components/outlier-banner'
 import { transformInvertData } from '../utils/transformers'
 import type { InvertMetric } from '../types'
 import { GROUPING_OPTIONS, type GroupingKey } from '../types'
@@ -71,9 +72,14 @@ function Macroinvertebrates() {
   const [communityGrouping, setCommunityGrouping] = useState<GroupingKey>('Watershed')
   const [downloadMetrics, setDownloadMetrics] = useState<(keyof typeof PARAMETER_OPTIONS)[]>(['abundance'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
+  const [showOutliers, setShowOutliers] = useState(false)
 
   // Filter data based on selected parameter
   const filteredData = invertMetrics.filter((d) => d.parameter === parameter)
+
+  // Count outliers and conditionally filter them
+  const outlierCount = filteredData.filter((d) => d.isOutlier).length
+  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
 
   // Filter community data
   const filteredCommunityData = communityData.filter((d) => d.parameter === communityParam)
@@ -162,10 +168,16 @@ function Macroinvertebrates() {
         )}
       </div>
 
+      <OutlierBanner
+        outlierCount={outlierCount}
+        showOutliers={showOutliers}
+        onToggle={() => setShowOutliers(!showOutliers)}
+      />
+
       {/* Map */}
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
         <h3 className="text-xl font-bold text-foreground mb-2">Spatial Patterns</h3>
-        <SoilMap data={filteredData} parameter={PARAMETER_OPTIONS[parameter]} units={PARAMETER_UNITS[parameter]} />
+        <SoilMap data={chartData} parameter={PARAMETER_OPTIONS[parameter]} units={PARAMETER_UNITS[parameter]} />
       </div>
 
       {/* Charts */}
@@ -173,7 +185,7 @@ function Macroinvertebrates() {
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Parameter Distribution</h3>
           <Histogram
-            data={filteredData}
+            data={chartData}
             groupBy={grouping}
             parameter={PARAMETER_OPTIONS[parameter]}
             units={PARAMETER_UNITS[parameter]}
@@ -183,7 +195,7 @@ function Macroinvertebrates() {
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Group Comparison</h3>
           <Boxplot
-            data={filteredData}
+            data={chartData}
             groupBy={grouping}
             parameter={PARAMETER_OPTIONS[parameter]}
             units={PARAMETER_UNITS[parameter]}
@@ -195,7 +207,7 @@ function Macroinvertebrates() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Summary Statistics</h3>
-          <SummaryTable data={filteredData} groupBy={grouping} units={PARAMETER_UNITS[parameter]} />
+          <SummaryTable data={chartData} groupBy={grouping} units={PARAMETER_UNITS[parameter]} />
         </div>
 
         <div className="bg-card border border-border rounded-xl p-4">
