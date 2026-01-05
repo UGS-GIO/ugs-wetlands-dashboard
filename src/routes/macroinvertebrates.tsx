@@ -105,7 +105,7 @@ function Macroinvertebrates() {
 
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src={`${import.meta.env.BASE_URL}images/damselfly_moab.jpg`}
+            src={`${import.meta.env.BASE_URL}images/damselfly_moab.webp`}
             alt="An adult damselfly rests on wetland vegetation near Moab"
             className="w-full h-auto max-h-96 object-cover rounded-xl shadow-lg"
           />
