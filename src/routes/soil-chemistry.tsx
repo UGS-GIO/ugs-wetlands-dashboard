@@ -125,7 +125,8 @@ function SoilChemistry() {
   }, [category])
 
   // Filter data based on selected parameter (by parameter code)
-  const filteredData = soilData.filter((d) => d.parameter === parameter)
+  // Always exclude flagged values (e.g., negative nitrate) from visualizations
+  const filteredData = soilData.filter((d) => d.parameter === parameter && !d.flag)
 
   // Count outliers and conditionally filter them
   const outlierCount = filteredData.filter((d) => d.isOutlier).length
@@ -320,13 +321,14 @@ function SoilChemistry() {
         onAccept={() => {
           setShowDisclaimer(false)
           const downloadData = soilData.filter((d) => downloadGroups.includes(d.category as keyof typeof DOWNLOAD_GROUP_OPTIONS))
-          const headers = ['siteid', 'parameter', 'value', 'units', 'definition', 'method', 'mdl', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'huc_name', 'project', 'date', 'name', 'latitude', 'longitude']
+          const headers = ['siteid', 'parameter', 'value', 'units', 'flag', 'definition', 'method', 'mdl', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'huc_name', 'project', 'date', 'name', 'latitude', 'longitude']
           downloadCSV(downloadData, `soil-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
             switch (key) {
               case 'siteid': return row.siteid
               case 'parameter': return row.parameter
               case 'value': return row.value
               case 'units': return row.units
+              case 'flag': return row.flag
               case 'definition': return row.definition
               case 'method': return row.method
               case 'mdl': return row.mdl
