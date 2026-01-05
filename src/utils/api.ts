@@ -3,12 +3,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://postgrest-sea
 const API_SCHEMA = import.meta.env.VITE_API_SCHEMA || 'wetlands'
 
 /**
- * Fetch data from PostgREST API
+ * Fetch data from PostgREST API with optional column selection
  * @param tableName Table name without wetdash_ prefix
+ * @param columns Optional array of columns to select (reduces payload size)
  * @returns Promise with the data array
  */
-export async function fetchFromAPI<T>(tableName: string): Promise<T[]> {
-  const url = `${API_BASE_URL}/wetdash_${tableName}`
+export async function fetchFromAPI<T>(tableName: string, columns?: string[]): Promise<T[]> {
+  let url = `${API_BASE_URL}/wetdash_${tableName}`
+  if (columns && columns.length > 0) {
+    url += `?select=${columns.join(',')}`
+  }
 
   const response = await fetch(url, {
     headers: {
@@ -22,6 +26,56 @@ export async function fetchFromAPI<T>(tableName: string): Promise<T[]> {
   }
 
   return response.json()
+}
+
+/**
+ * Fetch record count from PostgREST API without downloading all data
+ * Uses PostgREST's count feature for efficiency
+ * @param tableName Table name without wetdash_ prefix
+ * @returns Promise with the count
+ */
+export async function fetchCount(tableName: string): Promise<number> {
+  const url = `${API_BASE_URL}/wetdash_${tableName}?select=count`
+
+  const response = await fetch(url, {
+    headers: {
+      'Accept-Profile': API_SCHEMA,
+      Accept: 'application/vnd.pgrst.object+json',
+      Prefer: 'count=exact',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status} ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  return data.count || 0
+}
+
+/**
+ * Fetch unique values count for a column
+ * @param tableName Table name without wetdash_ prefix
+ * @param column Column to count unique values for
+ * @returns Promise with the unique count
+ */
+export async function fetchUniqueCount(tableName: string, column: string): Promise<number> {
+  const url = `${API_BASE_URL}/wetdash_${tableName}?select=${column}`
+
+  const response = await fetch(url, {
+    headers: {
+      'Accept-Profile': API_SCHEMA,
+      Accept: 'application/json',
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status} ${response.statusText}`)
+  }
+
+  const data = await response.json()
+  const uniqueValues = new Set(data.map((d: Record<string, unknown>) => d[column]))
+  return uniqueValues.size
 }
 
 /**
