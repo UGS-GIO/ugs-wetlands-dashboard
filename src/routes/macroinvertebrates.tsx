@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../components/ui/select'
-import { Checkbox } from '../components/ui/checkbox'
 import {
   invertRecordsQueryOptions,
   invertTaxaQueryOptions,
@@ -71,7 +70,6 @@ function Macroinvertebrates() {
   const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
   const [communityParam, setCommunityParam] = useState<keyof typeof COMMUNITY_OPTIONS>('feed_grp')
   const [communityGrouping, setCommunityGrouping] = useState<GroupingKey>('Watershed')
-  const [downloadMetrics, setDownloadMetrics] = useState<(keyof typeof PARAMETER_OPTIONS)[]>(['abundance'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
   const [showOutliers, setShowOutliers] = useState(false)
 
@@ -214,40 +212,14 @@ function Macroinvertebrates() {
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-xl font-bold text-foreground mb-2">Download Macroinvertebrate Data</h3>
           <p className="mb-4 text-base">
-            Download macroinvertebrate data in a convenient format for your own analysis, research, or reporting. Choose
-            a metric below.
+            Download macroinvertebrate data in a convenient format for your own analysis, research, or reporting.
           </p>
-          <div className="flex items-end gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium mb-2">Select Group</label>
-              <div className="space-y-3">
-                {Object.entries(PARAMETER_OPTIONS).map(([value, label]) => (
-                  <div key={value} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`macro-download-${value}`}
-                      checked={downloadMetrics.includes(value as keyof typeof PARAMETER_OPTIONS)}
-                      onCheckedChange={(checked) => {
-                        const key = value as keyof typeof PARAMETER_OPTIONS
-                        setDownloadMetrics(prev =>
-                          checked ? [...prev, key] : prev.filter(m => m !== key)
-                        )
-                      }}
-                    />
-                    <label htmlFor={`macro-download-${value}`} className="text-foreground cursor-pointer">
-                      {label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Button
-              disabled={downloadMetrics.length === 0}
-              onClick={() => setShowDisclaimer(true)}
-              className="bg-primary text-black hover:bg-primary/90 self-end"
-            >
-              Download
-            </Button>
-          </div>
+          <Button
+            onClick={() => setShowDisclaimer(true)}
+            className="bg-primary text-black hover:bg-primary/90"
+          >
+            Download
+          </Button>
         </div>
       </div>
 
@@ -337,22 +309,51 @@ function Macroinvertebrates() {
         onClose={() => setShowDisclaimer(false)}
         onAccept={() => {
           setShowDisclaimer(false)
-          const downloadData = invertMetrics.filter((d) => downloadMetrics.includes(d.parameter as keyof typeof PARAMETER_OPTIONS))
-          const headers = ['siteid', 'parameter', 'value', 'units', 'Watershed', 'ecoregion', 'Wetland Type', 'latitude', 'longitude']
-          downloadCSV(downloadData, `macroinvertebrates-${downloadMetrics.join('-')}.csv`, headers, (row, key) => {
-            switch (key) {
-              case 'siteid': return row.siteid
-              case 'parameter': return row.parameter
-              case 'value': return row.value
-              case 'units': return row.units
-              case 'Watershed': return row.Watershed
-              case 'ecoregion': return row.ecoregion
-              case 'Wetland Type': return row['Wetland Type']
-              case 'latitude': return row.latitude
-              case 'longitude': return row.longitude
-              default: return undefined
-            }
+
+          // Get unique taxa and sites
+          const allTaxa = [...new Set(invertsData.map(d => d.taxon))].sort()
+          const siteIds = [...new Set(invertsData.map(d => d.siteid))].sort()
+
+          // Create site lookup for attributes
+          const siteAttrs = new Map(sitesData.map(s => [s.siteid, s]))
+
+          // Create metrics lookup by siteid
+          const metricsMap = new Map<string, Record<string, number>>()
+          invertMetrics.forEach(m => {
+            if (!metricsMap.has(m.siteid)) metricsMap.set(m.siteid, {})
+            metricsMap.get(m.siteid)![m.parameter] = m.value
           })
+
+          // Create abundance lookup by site_taxa
+          const abundanceMap = new Map(invertsData.map(d => [`${d.siteid}_${d.taxon}`, d.abundance]))
+
+          // Build headers: site attrs + taxa + metrics
+          const headers = ['siteid', 'name', 'Watershed', 'ecoregion', 'Wetland Type', 'latitude', 'longitude', ...allTaxa, 'abundance', 'richness', 'eto_rel']
+
+          // Build rows
+          const rows = siteIds.map(siteid => {
+            const site = siteAttrs.get(siteid)
+            const metrics = metricsMap.get(siteid) || {}
+            const row: Record<string, string | number | undefined> = {
+              siteid,
+              name: site?.name,
+              Watershed: site?.huc_name,
+              ecoregion: site?.ecoregion,
+              'Wetland Type': site?.wet_type,
+              latitude: site?.latitude,
+              longitude: site?.longitude,
+              abundance: metrics.abundance,
+              richness: metrics.richness,
+              eto_rel: metrics.eto_rel,
+            }
+            // Add taxa columns
+            allTaxa.forEach(taxon => {
+              row[taxon] = abundanceMap.get(`${siteid}_${taxon}`)
+            })
+            return row
+          })
+
+          downloadCSV(rows, 'macroinvertebrates.csv', headers, (row, key) => row[key])
         }}
       />
     </div>
