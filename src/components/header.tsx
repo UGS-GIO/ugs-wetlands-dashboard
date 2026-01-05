@@ -15,7 +15,7 @@ export default function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border backdrop-blur-lg px-4 md:px-8 py-2">
+    <header className="sticky top-0 z-50 bg-header border-b border-border backdrop-blur-lg px-4 md:px-8 py-2">
       <div className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2 md:gap-4">
           <a href="https://geology.utah.gov/water/wetlands/" target="_blank" rel="noopener noreferrer">

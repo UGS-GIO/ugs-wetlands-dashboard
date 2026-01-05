@@ -34,20 +34,21 @@
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 88%;
     --input: 0 0% 88%;
-    --ring: 32 83% 50%;
-    --chart-1: 32 83% 50%;
+    --ring: 40 100% 45%;
+    --chart-1: 40 100% 45%;
     --chart-2: 180 60% 40%;
     --chart-3: 220 70% 50%;
     --chart-4: 280 65% 55%;
     --chart-5: 340 75% 55%;
     --sidebar: 0 0% 98%;
     --sidebar-foreground: 0 0% 10%;
-    --sidebar-primary: 32 83% 50%;
+    --sidebar-primary: 40 100% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 92%;
     --sidebar-accent-foreground: 0 0% 10%;
     --sidebar-border: 0 0% 88%;
-    --sidebar-ring: 32 83% 50%;
+    --sidebar-ring: 40 100% 45%;
+    --header: 0 0% 96%;               /* Light header background */
     /* Chart colors for light theme */
     --chart-text: #333333;
     --chart-axis: #555555;
@@ -57,39 +58,41 @@
 
   .dark {
     color-scheme: dark;
-    /* Dark theme (UGS branding) */
-    --background: 0 0% 11%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 17%;
+    /* Dark theme (Jacie's colors) */
+    --background: 0 0% 11%;           /* #1B1B1B - page background */
+    --foreground: 0 0% 100%;          /* #FFFFFF - font color */
+    --card: 0 0% 16%;                 /* #282828 - information panels */
     --card-foreground: 0 0% 100%;
-    --popover: 0 0% 17%;
+    --popover: 0 0% 16%;
     --popover-foreground: 0 0% 100%;
-    --primary: 40 100% 45%;
+    --primary: 40 100% 45%;           /* #E69800 - orange highlight */
     --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 17%;
+    --secondary: 0 0% 16%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 17%;
+    --muted: 0 0% 16%;
     --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 27%;
+    --accent: 0 0% 22%;               /* Neutral gray for UI elements */
+    --highlight: 28 100% 11%;         /* #361900 - colored boxes background */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 35%;
-    --input: 0 0% 35%;
-    --ring: 32 83% 50%;
-    --chart-1: 32 83% 50%;
+    --border: 0 0% 37%;               /* #5E5E5E - panel stroke */
+    --input: 0 0% 37%;
+    --ring: 40 100% 45%;
+    --header: 0 0% 21%;               /* #363636 - header background */
+    --chart-1: 40 100% 45%;
     --chart-2: 180 60% 50%;
     --chart-3: 220 70% 60%;
     --chart-4: 280 65% 65%;
     --chart-5: 340 75% 65%;
     --sidebar: 0 0% 11%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 32 83% 50%;
+    --sidebar-primary: 40 100% 45%;
     --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 17%;
+    --sidebar-accent: 0 0% 16%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 35%;
-    --sidebar-ring: 32 83% 50%;
+    --sidebar-border: 0 0% 37%;
+    --sidebar-ring: 40 100% 45%;
     /* Chart colors for dark theme */
     --chart-text: #e0e0e0;
     --chart-axis: #e0e0e0;
@@ -159,4 +162,5 @@ code {
   --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-header: hsl(var(--header));
 }
