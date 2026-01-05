@@ -162,7 +162,7 @@ function SoilChemistry() {
 
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src={`${import.meta.env.BASE_URL}images/playa_soils.jpg`}
+            src={`${import.meta.env.BASE_URL}images/playa_soils.webp`}
             alt="A salt crust has formed on playa wetland soils near Great Salt Lake"
             className="w-full h-auto max-h-96 object-cover rounded-xl shadow-lg"
           />

@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { fetchFromAPI } from '../utils/api'
+import { fetchCount, fetchUniqueCount } from '../utils/api'
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -18,19 +18,17 @@ function Home() {
   useEffect(() => {
     const loadCounts = async () => {
       try {
-        const [waterData, soilData, invertsData] = await Promise.all([
-          fetchFromAPI<{ site_param: string }>('water'),
-          fetchFromAPI<{ site_param: string }>('soil'),
-          fetchFromAPI<{ siteid: string }>('inverts'),
+        // Use lightweight count queries instead of fetching all data
+        const [waterCount, soilCount, invertsCount] = await Promise.all([
+          fetchCount('water'),
+          fetchCount('soil'),
+          fetchUniqueCount('inverts', 'siteid'),
         ])
 
-        // Count unique sites for inverts
-        const uniqueInvertSites = new Set(invertsData.map((d) => d.siteid)).size
-
         setCounts({
-          water: waterData.length,
-          soil: soilData.length,
-          inverts: uniqueInvertSites,
+          water: waterCount,
+          soil: soilCount,
+          inverts: invertsCount,
         })
       } catch (error) {
         console.error('Error loading data:', error)
@@ -77,7 +75,7 @@ function Home() {
 
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src={`${import.meta.env.BASE_URL}images/bda_strawberry.jpg`}
+            src={`${import.meta.env.BASE_URL}images/bda_strawberry.webp`}
             alt="Beaver Dam Analog and wetland near Strawberry Reservoir"
             className="w-full h-auto max-h-96 object-cover rounded-xl shadow-lg"
           />
@@ -98,7 +96,7 @@ function Home() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
         <div className="bg-card border border-border rounded-xl p-4 flex flex-col justify-center">
           <img
-            src={`${import.meta.env.BASE_URL}images/uwam_crew.jpg`}
+            src={`${import.meta.env.BASE_URL}images/uwam_crew.webp`}
             alt="UGS ecologists monitoring a wetland in Beaver County"
             className="w-full h-auto object-contain rounded-xl shadow-lg"
           />
