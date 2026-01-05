@@ -11,7 +11,7 @@ export default function OutlierBanner({ outlierCount, showOutliers, onToggle }: 
 
   return (
     <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 mb-4 flex items-center justify-between">
-      <span className="text-sm text-amber-600 dark:text-amber-400">
+      <span className="text-sm text-amber-800 dark:text-amber-400">
         {outlierCount} outlier{outlierCount !== 1 ? 's' : ''} detected (z-score &gt; 3) —{' '}
         {showOutliers ? 'showing all data' : 'hidden from visualizations'}
       </span>
