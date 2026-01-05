@@ -366,7 +366,8 @@ function WaterChemistry() {
           const dbCategories = downloadGroups.flatMap(g => DOWNLOAD_CATEGORY_MAP[g] || [])
           const downloadData = waterData.filter((d) => dbCategories.includes(d.category))
           const headers = ['siteid', 'parameter', 'value', 'units', 'flag', 'definition', 'mdl', 'lrl', 'method', 'category', 'Watershed', 'Ecoregion', 'Wetland Type', 'huc_name', 'project', 'date', 'name', 'latitude', 'longitude']
-          downloadCSV(downloadData, `water-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
+          const fileLabel = downloadGroups.map(g => DOWNLOAD_GROUP_OPTIONS[g].toLowerCase().replace(/[^a-z]+/g, '-').replace(/-+$/, '')).join('-')
+          downloadCSV(downloadData, `water-chemistry-${fileLabel}.csv`, headers, (row, key) => {
             switch (key) {
               case 'siteid': return row.siteid
               case 'parameter': return row.parameter
