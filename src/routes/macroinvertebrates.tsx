@@ -231,7 +231,7 @@ function Macroinvertebrates() {
           functions. Use the dropdown below to explore the relative abundance of feeding groups, types of
           macroinvertebrates, and types of arthropods.
         </p>
-        <ul className="ml-6 mb-4 text-base">
+        <ul className="list-disc ml-6 mb-4 text-base space-y-2">
           <li>
             Diversity in macroinvertebrate communities is reflected in diverse <strong>feeding groups</strong>. Some
             collect food by filtering water or gathering from surfaces. Snails and others scrape algae from soils and
