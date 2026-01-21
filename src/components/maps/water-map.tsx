@@ -54,6 +54,8 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
       },
       center: [-112.41, 40.38], // Center of Utah (matching Shiny)
       zoom: 7,
+      minZoom: 5,
+      cooperativeGestures: true,
     })
 
     map.current.addControl(new maplibregl.NavigationControl(), 'top-left')

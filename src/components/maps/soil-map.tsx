@@ -39,6 +39,8 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
       style: basemapUrls[basemap],
       center: [-112.41, 40.38],
       zoom: 7,
+      minZoom: 5,
+      cooperativeGestures: true,
     })
 
     map.current.addControl(new maplibregl.NavigationControl(), 'top-left')
