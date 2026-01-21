@@ -40,13 +40,13 @@ const COMMUNITY_OPTIONS = {
 }
 
 const PARAMETER_DESCRIPTIONS: Record<string, string> = {
-  abundance: `<strong>Abundance</strong> is the total number of macroinvertebrates of any group found in a sample taken by sweeping a net at the soil/water interface. Healthy wetlands have macroinvertebrate communities that are both abundant and diverse.`,
+  abundance: `<strong>Abundance</strong> (#/m²) is the total number of macroinvertebrates of any group found in a sample taken by sweeping a net at the soil/water interface. Healthy wetlands have macroinvertebrate communities that are both abundant and diverse.`,
   richness: `<strong>Taxa Richness</strong> is a count of all the different types of organisms in a sample. An organism can be identified at many levels, depending on the life stage of the invertebrate and the skill of the laboratory. Species is the most detailed taxonomic level, but especially small and cryptic invertebrates may only be identified to Order (ex. mites are in the order Trombidiformes). From largest to smallest, taxonomic levels are Kingdom > Phylum > Class > Order > Family > Genus > Species.`,
   eto_rel: `<strong>ETO Relative Richness</strong> is the proportion of the total measure of abundance that is composed of three orders of insects: Ephemeroptera (mayflies), Tricoptera (caddisflies), and Odonata (dragon- and damselflies). These orders are especially sensitive to disturbances like changes in water quality. Samples with a majority of ETO taxa are indicators of low disturbance and healthier wetlands.`,
 }
 
 const PARAMETER_UNITS: Record<string, string> = {
-  abundance: '#',
+  abundance: '#/m²',
   richness: '#',
   eto_rel: '%',
 }

@@ -50,10 +50,10 @@ function Home() {
           </p>
 
           <p className="text-base mb-4">
-            Utah is home to 1.5 million acres of wetlands. Wetlands have three parts: 1) water at or near the soil surface for some part of the year, 2) hydric soils
-            with low oxygen created by flooding, and 3) hydrophytic plants that have adaptations to flooding and hydric
-            soils. Wetlands are rare in Utah, only three percent of the state, but they provide functions that are
-            crucial to healthy watersheds. Wetland functions include:
+            Utah is home to 1.5 million acres of wetlands. Wetlands are land that has: 1) water at or near the soil surface for some part of the year, 2) hydric soils
+            with low oxygen created by flooding, and 3) hydrophytic plants, which are adapted to grow in water or saturated, low-oxygen soils. 
+            Wetlands are rare in Utah, covering only three percent of the state, but they provide functions that are crucial to healthy watersheds. 
+            Wetland functions include:
           </p>
 
           <ul className="list-disc ml-6 mb-4">

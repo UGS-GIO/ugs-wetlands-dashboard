@@ -184,7 +184,7 @@ function WaterChemistry() {
             Data notes. Of the dozens of water chemistry parameters that can be measured, we present the parameters
             most indicative of wetland condition: general chemistry, nutrients, and metals/metalloids. Parameters not
             included in the plots below can be downloaded. For the purpose of clear data visualization we have removed
-            outlier values, but those values are included in the data download.
+            outlier values, but those values are included in the data download. Note that electing to show outliers changes the color-ramp scale bar on the map and the y-axis scales.
           </p>
         </div>
 
