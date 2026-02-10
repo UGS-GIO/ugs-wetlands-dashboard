@@ -92,7 +92,7 @@ const FLAG_COLUMNS = ['site_param', 'flag']
 // Query options for shared site attributes
 export const siteAttributesQueryOptions = queryOptions({
   queryKey: ['site-attributes'],
-  queryFn: () => fetchFromAPI<SiteAttribute>('site_attr', SITE_ATTR_COLUMNS),
+  queryFn: () => fetchFromAPI<SiteAttribute>('siteattributes', SITE_ATTR_COLUMNS),
 })
 
 // Query options for water chemistry data
@@ -103,7 +103,7 @@ export const waterRecordsQueryOptions = queryOptions({
 
 export const waterParamsQueryOptions = queryOptions({
   queryKey: ['water-params'],
-  queryFn: () => fetchFromAPI<WaterParam>('water_param', WATER_PARAM_COLUMNS),
+  queryFn: () => fetchFromAPI<WaterParam>('waterparameters', WATER_PARAM_COLUMNS),
 })
 
 // Query options for soil chemistry data
@@ -114,7 +114,7 @@ export const soilRecordsQueryOptions = queryOptions({
 
 export const soilParamsQueryOptions = queryOptions({
   queryKey: ['soil-params'],
-  queryFn: () => fetchFromAPI<SoilParam>('soil_param', SOIL_PARAM_COLUMNS),
+  queryFn: () => fetchFromAPI<SoilParam>('soilparameters', SOIL_PARAM_COLUMNS),
 })
 
 // Query options for macroinvertebrate data
@@ -125,7 +125,7 @@ export const invertRecordsQueryOptions = queryOptions({
 
 export const invertTaxaQueryOptions = queryOptions({
   queryKey: ['invert-taxa'],
-  queryFn: () => fetchFromAPI<InvertTaxon>('invert_param', INVERT_PARAM_COLUMNS),
+  queryFn: () => fetchFromAPI<InvertTaxon>('invertparameters', INVERT_PARAM_COLUMNS),
 })
 
 export const flagsQueryOptions = queryOptions({
