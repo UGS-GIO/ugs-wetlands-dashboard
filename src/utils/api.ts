@@ -4,12 +4,12 @@ const API_SCHEMA = import.meta.env.VITE_API_SCHEMA || 'wetlands'
 
 /**
  * Fetch data from PostgREST API with optional column selection
- * @param tableName Table name without wetdash_ prefix
+ * @param tableName Table name without wetlands_wetdash_ prefix and _current suffix
  * @param columns Optional array of columns to select (reduces payload size)
  * @returns Promise with the data array
  */
 export async function fetchFromAPI<T>(tableName: string, columns?: string[]): Promise<T[]> {
-  let url = `${API_BASE_URL}/wetdash_${tableName}`
+  let url = `${API_BASE_URL}/wetlands_wetdash_${tableName}_current`
   if (columns && columns.length > 0) {
     url += `?select=${columns.join(',')}`
   }
@@ -31,11 +31,11 @@ export async function fetchFromAPI<T>(tableName: string, columns?: string[]): Pr
 /**
  * Fetch record count from PostgREST API without downloading all data
  * Uses PostgREST's count feature for efficiency
- * @param tableName Table name without wetdash_ prefix
+ * @param tableName Table name without wetlands_wetdash_ prefix and _current suffix
  * @returns Promise with the count
  */
 export async function fetchCount(tableName: string): Promise<number> {
-  const url = `${API_BASE_URL}/wetdash_${tableName}?select=count`
+  const url = `${API_BASE_URL}/wetlands_wetdash_${tableName}_current?select=count`
 
   const response = await fetch(url, {
     headers: {
@@ -55,12 +55,12 @@ export async function fetchCount(tableName: string): Promise<number> {
 
 /**
  * Fetch unique values count for a column
- * @param tableName Table name without wetdash_ prefix
+ * @param tableName Table name without wetlands_wetdash_ prefix and _current suffix
  * @param column Column to count unique values for
  * @returns Promise with the unique count
  */
 export async function fetchUniqueCount(tableName: string, column: string): Promise<number> {
-  const url = `${API_BASE_URL}/wetdash_${tableName}?select=${column}`
+  const url = `${API_BASE_URL}/wetlands_wetdash_${tableName}_current?select=${column}`
 
   const response = await fetch(url, {
     headers: {
@@ -80,7 +80,7 @@ export async function fetchUniqueCount(tableName: string, column: string): Promi
 
 /**
  * Fetch multiple tables from PostgREST API
- * @param tableNames Array of table names without wetdash_ prefix
+ * @param tableNames Array of table names without wetlands_wetdash_ prefix and _current suffix
  * @returns Promise with object containing all tables
  */
 export async function fetchMultipleFromAPI(
