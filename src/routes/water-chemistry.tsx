@@ -30,14 +30,14 @@ import { GROUPING_OPTIONS, type GroupingKey } from '../types'
 const CATEGORY_OPTIONS = {
   genchem: 'General Chemistry',
   nuts: 'Nutrients',
-  metal: 'Metal(oids)',
+  metal: 'Metal(loid)s',
 }
 
 // Download categories - maps to one or more database category values
 const DOWNLOAD_GROUP_OPTIONS = {
   genchem: 'General Chemistry',
   nuts: 'Nutrients',
-  toxic: 'Metal(oids)',
+  toxic: 'Metal(loid)s',
 }
 
 // Map download group keys to database categories
@@ -97,7 +97,7 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
 <em>*Nutrients are measured both as total or unfiltered and dissolved or filtered fractions.</em>`,
   },
   metal: {
-    title: 'Metal(oids)',
+    title: 'Metal(loid)s',
     content: `Metals and Metalloids are elements that are naturally found in the Earth's crust and waterways. Human activities like irrigation, manufacturing, and driving vehicles concentrate those elements in waterways. Some metals and metalloids are toxic to wildlife and humans, leading to death and deformities. Others accumulate in animal fats and cause birth defects or death at higher trophic levels. Many elements are critical micronutrients for plants and animals, and only become impactful at high concentrations.
 
 • <strong>Arsenic</strong>, <strong>cadmium</strong>, <strong>chromium</strong>, <strong>lead</strong>, and <strong>mercury</strong> are toxic even at very low concentrations. These elements are highest in waters influenced by industrial discharges and mining. Mercury is of special concern because it bioaccumulates in the food chain.
