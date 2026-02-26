@@ -228,7 +228,7 @@ function ValueBox({ value, label, icon, href }: { value: string; label: string; 
   return (
     <Link
       to={href}
-      className="value-box bg-gradient-to-br from-card to-accent rounded-xl p-4 text-center border border-border block cursor-pointer"
+      className="bg-gradient-to-br from-card to-accent rounded-xl p-4 text-center border border-border block cursor-pointer hover:bg-none hover:bg-ugs-dark-alt"
     >
       <div className="text-3xl mb-2">{icon}</div>
       <div className="text-4xl font-bold text-primary">{value}</div>
