@@ -123,6 +123,10 @@ code {
     monospace;
 }
 
+.value-box:hover {
+  background: var(--color-ugs-dark-alt);
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
