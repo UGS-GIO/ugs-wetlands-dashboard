@@ -124,7 +124,7 @@ code {
 }
 
 .value-box:hover {
-  background: var(--color-ugs-dark-alt);
+  background: var(--color-ugs-dark-alt) !important;
 }
 
 @theme inline {

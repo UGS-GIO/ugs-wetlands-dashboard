@@ -440,11 +440,11 @@ function SummaryTable({
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-2">Group</th>
-            <th className="text-right py-2">Sample<span className="lg:block"> Size</span></th>
-            <th className="text-right py-2">Min{units && <span className="lg:block"> ({units})</span>}</th>
-            <th className="text-right py-2">Median{units && <span className="lg:block"> ({units})</span>}</th>
-            <th className="text-right py-2">Mean{units && <span className="lg:block"> ({units})</span>}</th>
-            <th className="text-right py-2">Max{units && <span className="lg:block"> ({units})</span>}</th>
+            <th className="text-right py-2">Sample<br/>Size</th>
+            <th className="text-right py-2">Min{units && <><br/>({units})</>}</th>
+            <th className="text-right py-2">Median{units && <><br/>({units})</>}</th>
+            <th className="text-right py-2">Mean{units && <><br/>({units})</>}</th>
+            <th className="text-right py-2">Max{units && <><br/>({units})</>}</th>
           </tr>
         </thead>
         <tbody>
