@@ -405,19 +405,17 @@ function SummaryTable({
     })
     .sort((a, b) => a.group.localeCompare(b.group)) // Sort alphabetically (matching R Shiny)
 
-  const unitLabel = units ? ` (${units})` : ''
-
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border">
             <th className="text-left py-2">Group</th>
-            <th className="text-right py-2">Sample Size</th>
-            <th className="text-right py-2">Min{unitLabel}</th>
-            <th className="text-right py-2">Median{unitLabel}</th>
-            <th className="text-right py-2">Mean{unitLabel}</th>
-            <th className="text-right py-2">Max{unitLabel}</th>
+            <th className="text-right py-2">Sample<span className="lg:block"> Size</span></th>
+            <th className="text-right py-2">Min{units && <span className="lg:block"> ({units})</span>}</th>
+            <th className="text-right py-2">Median{units && <span className="lg:block"> ({units})</span>}</th>
+            <th className="text-right py-2">Mean{units && <span className="lg:block"> ({units})</span>}</th>
+            <th className="text-right py-2">Max{units && <span className="lg:block"> ({units})</span>}</th>
           </tr>
         </thead>
         <tbody>
