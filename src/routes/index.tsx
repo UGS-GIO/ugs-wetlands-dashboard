@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { fetchCount, fetchUniqueCount } from '../utils/api'
 
@@ -87,9 +87,9 @@ function Home() {
 
       {/* Value Boxes */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        <ValueBox value={counts.water.toLocaleString()} label="Water Records" icon="💧" />
-        <ValueBox value={counts.soil.toLocaleString()} label="Soil Records" icon="🌍" />
-        <ValueBox value={counts.inverts.toString()} label="Macroinvertebrate Samples" icon="🦐" />
+        <ValueBox value={counts.water.toLocaleString()} label="Water Chemistry Records" icon="💧" href="/water-chemistry" />
+        <ValueBox value={counts.soil.toLocaleString()} label="Soil Chemistry Records" icon="🌍" href="/soil-chemistry" />
+        <ValueBox value={counts.inverts.toString()} label="Macroinvertebrate Samples" icon="🦐" href="/macroinvertebrates" />
       </div>
 
       {/* Data Sources Section */}
@@ -114,7 +114,7 @@ function Home() {
             measure wetland condition is to assess what types of plants are growing and how much area they cover. Water,
             soil, and macroinvertebrates provide important clues into factors that drive wetland condition and those
             samples were gathered alongside plant community monitoring. The existing data is heavily focused around Great
-            Salt Lake, but the UGS hopes to collate more data to paint a full picture of wetland chemistry and biology
+            Salt Lake. The UGS hopes to collate more data to paint a full picture of wetland chemistry and biology
             across Utah. To learn more about data included in this dashboard, check out the resources below:
           </p>
 
@@ -224,12 +224,15 @@ function Home() {
 }
 
 // Value Box Component
-function ValueBox({ value, label, icon }: { value: string; label: string; icon: string }) {
+function ValueBox({ value, label, icon, href }: { value: string; label: string; icon: string; href: string }) {
   return (
-    <div className="bg-gradient-to-br from-card to-accent rounded-xl p-4 text-center border border-border">
+    <Link
+      to={href}
+      className="bg-gradient-to-br from-card to-accent rounded-xl p-4 text-center border border-border block transition-colors hover:bg-[#2b2b2b]"
+    >
       <div className="text-3xl mb-2">{icon}</div>
       <div className="text-4xl font-bold text-primary">{value}</div>
       <div className="text-base text-muted-foreground mt-2">{label}</div>
-    </div>
+    </Link>
   )
 }

@@ -409,10 +409,10 @@ function SummaryTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm table-fixed">
         <thead>
           <tr className="border-b border-border">
-            <th className="text-left py-2">Group</th>
+            <th className="text-left py-2 w-1/3">Group</th>
             <th className="text-right py-2">Sample Size</th>
             <th className="text-right py-2">Min{unitLabel}</th>
             <th className="text-right py-2">Median{unitLabel}</th>
