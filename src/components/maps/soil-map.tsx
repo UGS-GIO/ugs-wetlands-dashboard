@@ -128,11 +128,11 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
     <div className="flex flex-col">
       {/* Map wrapper */}
       <div className="relative">
-        {/* Basemap toggle */}
+        {/* Basemap toggle (top-right on phones so it clears the attribution) */}
         <BasemapSelector
           activeBasemap={basemap}
           onBasemapChange={setBasemap}
-          className="absolute bottom-2 left-2 z-10"
+          className="absolute top-2 right-2 sm:top-auto sm:right-auto sm:bottom-2 sm:left-2 z-10"
         />
 
         {/* Map container */}
