@@ -21,7 +21,6 @@ interface BasemapSelectorProps {
 }
 
 function getDisplayTitle(style: BasemapStyle): string {
-  if (style.id === 'satellite') return 'Satellite (Utah)'
   return style.title
 }
 
@@ -42,7 +41,7 @@ export function BasemapSelector({
 
   return (
     <div className={cn('flex items-center', className)}>
-      {/* Desktop / tablet button bar + More dropdown */}
+      {/* Desktop / tablet button bar + More dropdown (if any long styles exist) */}
       <div className="hidden sm:inline-flex items-center bg-card/95 backdrop-blur-xs text-card-foreground rounded-lg shadow-md border border-border p-0.5 text-xs font-medium">
         {shortStyles.map((style) => {
           const isActive = activeBasemap === style.id
@@ -65,7 +64,7 @@ export function BasemapSelector({
 
         {longStyles.length > 0 && (
           <Select
-            value={isLongActive ? activeBasemap : ''}
+            value={isLongActive ? activeBasemap : undefined}
             onValueChange={(val) => val && onBasemapChange(val)}
           >
             <SelectTrigger
@@ -79,7 +78,7 @@ export function BasemapSelector({
             >
               <span>{longTitle}</span>
             </SelectTrigger>
-            <SelectContent align="start">
+            <SelectContent position="popper" align="start" side="top">
               {longStyles.map((style) => (
                 <SelectItem key={style.id} value={style.id}>
                   {getDisplayTitle(style)}
@@ -100,9 +99,9 @@ export function BasemapSelector({
             <Layers className="size-3.5 mr-1 text-muted-foreground" />
             <SelectValue />
           </SelectTrigger>
-          <SelectContent align="start">
+          <SelectContent position="popper" align="start" side="top">
             <SelectGroup>
-              <SelectLabel>Standard</SelectLabel>
+              <SelectLabel>Basemaps</SelectLabel>
               {shortStyles.map((style) => (
                 <SelectItem key={style.id} value={style.id}>
                   {getDisplayTitle(style)}
@@ -113,7 +112,7 @@ export function BasemapSelector({
               <>
                 <SelectSeparator />
                 <SelectGroup>
-                  <SelectLabel>Utah / Aerial</SelectLabel>
+                  <SelectLabel>Other</SelectLabel>
                   {longStyles.map((style) => (
                     <SelectItem key={style.id} value={style.id}>
                       {getDisplayTitle(style)}

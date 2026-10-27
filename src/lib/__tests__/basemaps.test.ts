@@ -16,7 +16,7 @@ describe('resolveAppBasemaps', () => {
     expect(defaultStyle).toBe(DEFAULT_BASEMAP)
   })
 
-  it.each(['carbonstorage', 'geophysics', 'minerals', 'subsurface', 'wetlands', 'wetlandplants', 'flux'])(
+  it.each(['carbonstorage', 'geophysics', 'minerals', 'subsurface', 'wetlandplants', 'flux'])(
     'leaves %s on the stock menu',
     (page) => {
       const { styles, defaultStyle } = resolveAppBasemaps(page)
@@ -30,6 +30,13 @@ describe('resolveAppBasemaps', () => {
       expect(styles.map((b) => b.id).sort()).toEqual(BASEMAP_STYLES.map((b) => b.id).sort())
     },
   )
+
+  it('configures wetlands with Utah imagery and hybrid without long dropdown', () => {
+    const { styles, defaultStyle } = resolveAppBasemaps('wetlands')
+    expect(defaultStyle.id).toBe('liberty')
+    expect(styles.map((b) => b.id)).toEqual(['liberty', 'satellite', 'lite', 'terrain', 'hybrid'])
+    expect(styles.every((b) => b.type === 'short')).toBe(true)
+  })
 
   it('opens hazards on UGRC Utah imagery', () => {
     expect(resolveAppBasemaps('hazards').defaultStyle.id).toBe('satellite')

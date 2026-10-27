@@ -158,6 +158,13 @@ const HAZARDS_BASEMAPS: AppBasemapConfig = {
   hide: ['sentinel'],
 };
 
+/** Wetlands uses high-res Utah aerial imagery and hybrid over coarse Sentinel-2 mosaic. */
+const WETLANDS_BASEMAPS: AppBasemapConfig = {
+  default: 'liberty',
+  short: ['liberty', 'satellite', 'lite', 'terrain', 'hybrid'],
+  hide: ['sentinel', 'none'],
+};
+
 const APP_BASEMAPS: Record<string, AppBasemapConfig> = {
   hazards: HAZARDS_BASEMAPS,
   'hazards-review': { ...HAZARDS_BASEMAPS, default: 'lite' },
@@ -165,7 +172,7 @@ const APP_BASEMAPS: Record<string, AppBasemapConfig> = {
   geophysics: { default: 'liberty', short: STANDARD_SHORT },
   minerals: { default: 'liberty', short: STANDARD_SHORT },
   subsurface: { default: 'liberty', short: STANDARD_SHORT },
-  wetlands: { default: 'liberty', short: STANDARD_SHORT },
+  wetlands: WETLANDS_BASEMAPS,
   wetlandplants: { default: 'liberty', short: STANDARD_SHORT },
   flux: { default: 'liberty', short: STANDARD_SHORT },
 };
