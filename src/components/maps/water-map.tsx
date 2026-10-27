@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import maplibregl, { StyleSpecification } from 'maplibre-gl'
+import maplibregl from 'maplibre-gl'
 import * as d3 from 'd3'
 import { useMapLegend, LegendControl, SampleTypeLegendControl, HorizontalLegend } from './map-legend'
+import { BasemapSelector } from './basemap-selector'
+import { buildBasemapStyle, getBasemap, DEFAULT_BASEMAP } from '@/lib/basemaps'
 
 interface DataPoint {
   value: number
@@ -24,7 +26,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
   const markers = useRef<maplibregl.Marker[]>([])
   const legendControl = useRef<LegendControl | null>(null)
   const sampleTypeLegend = useRef<SampleTypeLegendControl | null>(null)
-  const [basemap, setBasemap] = useState<'light' | 'dark'>('light')
+  const [basemap, setBasemap] = useState<string>(DEFAULT_BASEMAP.id)
 
   // Initialize map once
   useEffect(() => {
@@ -32,26 +34,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          'carto-light': {
-            type: 'raster',
-            tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            attribution: '© OpenStreetMap contributors © CARTO',
-          },
-        },
-        layers: [
-          {
-            id: 'carto-light-layer',
-            type: 'raster',
-            source: 'carto-light',
-            minzoom: 0,
-            maxzoom: 22,
-          },
-        ],
-      },
+      style: buildBasemapStyle(getBasemap(basemap)),
       center: [-112.41, 40.38], // Center of Utah (matching Shiny)
       zoom: 7,
       minZoom: 5,
@@ -77,37 +60,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
   // Update basemap when toggled
   useEffect(() => {
     if (!map.current) return
-
-    const style: StyleSpecification = {
-      version: 8,
-      sources: {
-        'carto-basemap': {
-          type: 'raster',
-          tiles:
-            basemap === 'light'
-              ? ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png']
-              : ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],
-          tileSize: 256,
-          attribution: '© OpenStreetMap contributors © CARTO',
-        },
-      },
-      layers: [
-        {
-          id: 'carto-basemap-layer',
-          type: 'raster',
-          source: 'carto-basemap',
-          minzoom: 0,
-          maxzoom: 22,
-        },
-      ],
-    }
-
-    map.current.setStyle(style)
-
-    // Re-add markers after style change
-    map.current.once('styledata', () => {
-      // Markers will be re-added by the data effect
-    })
+    map.current.setStyle(buildBasemapStyle(getBasemap(basemap)))
   }, [basemap])
 
   // Update markers when data changes
@@ -196,7 +149,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
     } else {
       map.current.once('load', addMarkers)
     }
-  }, [data, parameter, units, basemap])
+  }, [data, parameter, units])
 
   // Build legend data using shared hook
   const validData = data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude))
@@ -214,24 +167,11 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
       {/* Map wrapper */}
       <div className="relative">
         {/* Basemap toggle */}
-        <div className="absolute bottom-2 left-2 z-10 bg-white rounded-lg shadow-md overflow-hidden">
-          <button
-            onClick={() => setBasemap('light')}
-            className={`px-3 py-2 text-sm font-medium transition-colors ${
-              basemap === 'light' ? 'bg-primary text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Light
-          </button>
-          <button
-            onClick={() => setBasemap('dark')}
-            className={`px-3 py-2 text-sm font-medium transition-colors ${
-              basemap === 'dark' ? 'bg-primary text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Dark
-          </button>
-        </div>
+        <BasemapSelector
+          activeBasemap={basemap}
+          onBasemapChange={setBasemap}
+          className="absolute bottom-2 left-2 z-10"
+        />
 
         {/* Map container */}
         <div ref={mapContainer} style={{ height: '500px', width: '100%', borderRadius: '8px' }} />

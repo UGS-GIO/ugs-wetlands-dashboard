@@ -3,6 +3,8 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import * as d3 from 'd3'
 import { useMapLegend, LegendControl, HorizontalLegend } from './map-legend'
+import { BasemapSelector } from './basemap-selector'
+import { buildBasemapStyle, getBasemap, DEFAULT_BASEMAP } from '@/lib/basemaps'
 
 interface DataPoint {
   siteid: string
@@ -23,12 +25,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
   const map = useRef<maplibregl.Map | null>(null)
   const markersRef = useRef<maplibregl.Marker[]>([])
   const legendControl = useRef<LegendControl | null>(null)
-  const [basemap, setBasemap] = useState<'light' | 'dark'>('light')
-
-  const basemapUrls = {
-    light: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    dark: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-  }
+  const [basemap, setBasemap] = useState<string>(DEFAULT_BASEMAP.id)
 
   // Initialize map
   useEffect(() => {
@@ -36,7 +33,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: basemapUrls[basemap],
+      style: buildBasemapStyle(getBasemap(basemap)),
       center: [-112.41, 40.38],
       zoom: 7,
       minZoom: 5,
@@ -60,7 +57,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
   // Update basemap
   useEffect(() => {
     if (!map.current) return
-    map.current.setStyle(basemapUrls[basemap])
+    map.current.setStyle(buildBasemapStyle(getBasemap(basemap)))
   }, [basemap])
 
   // Update markers when data changes
@@ -109,12 +106,12 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
       })
     }
 
-    if (map.current.isStyleLoaded()) {
+    if (map.current.loaded()) {
       addMarkers()
     } else {
       map.current.once('load', addMarkers)
     }
-  }, [data, parameter, units, basemap])
+  }, [data, parameter, units])
 
   // Build legend data using shared hook
   const validData = data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude))
@@ -132,24 +129,11 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
       {/* Map wrapper */}
       <div className="relative">
         {/* Basemap toggle */}
-        <div className="absolute bottom-2 left-2 z-10 bg-white rounded-lg shadow-md overflow-hidden">
-          <button
-            onClick={() => setBasemap('light')}
-            className={`px-3 py-2 text-sm font-medium transition-colors ${
-              basemap === 'light' ? 'bg-primary text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Light
-          </button>
-          <button
-            onClick={() => setBasemap('dark')}
-            className={`px-3 py-2 text-sm font-medium transition-colors ${
-              basemap === 'dark' ? 'bg-primary text-black' : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Dark
-          </button>
-        </div>
+        <BasemapSelector
+          activeBasemap={basemap}
+          onBasemapChange={setBasemap}
+          className="absolute bottom-2 left-2 z-10"
+        />
 
         {/* Map container */}
         <div ref={mapContainer} style={{ height: '500px', width: '100%', borderRadius: '8px' }} />
