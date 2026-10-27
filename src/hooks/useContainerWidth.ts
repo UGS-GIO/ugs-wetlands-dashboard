@@ -1,14 +1,14 @@
-import { useEffect, useState, RefObject } from 'react'
+import { useCallback, useState } from 'react'
 
 /**
  * Hook to track container width changes for responsive D3 charts
- * Uses ResizeObserver for efficient resize detection
+ * Returns a callback ref that attaches a ResizeObserver to whichever element it lands on
  */
-export function useContainerWidth(containerRef: RefObject<HTMLElement | null>): number {
+export function useContainerWidth<T extends HTMLElement>(): [(node: T | null) => () => void, number] {
   const [width, setWidth] = useState(0)
 
-  useEffect(() => {
-    if (!containerRef.current) return
+  const containerRef = useCallback((node: T | null) => {
+    if (!node) return () => {}
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -16,11 +16,11 @@ export function useContainerWidth(containerRef: RefObject<HTMLElement | null>): 
       }
     })
 
-    resizeObserver.observe(containerRef.current)
-    setWidth(containerRef.current.offsetWidth)
+    resizeObserver.observe(node)
+    setWidth(node.offsetWidth)
 
     return () => resizeObserver.disconnect()
-  }, [containerRef])
+  }, [])
 
-  return width
+  return [containerRef, width]
 }

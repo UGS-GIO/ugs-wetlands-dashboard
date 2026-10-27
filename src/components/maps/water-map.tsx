@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import maplibregl from 'maplibre-gl'
 import * as d3 from 'd3'
-import { useMapLegend, LegendControl, SampleTypeLegendControl, HorizontalLegend } from './map-legend'
+import { buildMapLegend, LegendControl, SampleTypeLegendControl, HorizontalLegend } from './map-legend'
 import { BasemapSelector } from './basemap-selector'
 import { buildBasemapStyle, getBasemap, DEFAULT_BASEMAP } from '@/lib/basemaps'
 
@@ -21,20 +21,19 @@ interface WaterMapProps {
 }
 
 export default function WaterMap({ data, parameter, units }: WaterMapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null)
   const map = useRef<maplibregl.Map | null>(null)
   const markers = useRef<maplibregl.Marker[]>([])
   const legendControl = useRef<LegendControl | null>(null)
   const sampleTypeLegend = useRef<SampleTypeLegendControl | null>(null)
   const [basemap, setBasemap] = useState<string>(DEFAULT_BASEMAP.id)
 
-  // Initialize map once
-  useEffect(() => {
-    if (!mapContainer.current || map.current) return
+  // Initialize map when the container mounts, tear it down when it unmounts
+  const mapContainer = useCallback((container: HTMLDivElement | null) => {
+    if (!container) return
 
     map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: buildBasemapStyle(getBasemap(basemap)),
+      container,
+      style: buildBasemapStyle(DEFAULT_BASEMAP),
       center: [-112.41, 40.38], // Center of Utah (matching Shiny)
       zoom: 7,
       minZoom: 5,
@@ -50,20 +49,26 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
     map.current.addControl(sampleTypeLegend.current, 'bottom-right')
 
     return () => {
-      if (map.current) {
-        map.current.remove()
-        map.current = null
-      }
+      map.current?.remove()
+      map.current = null
+      legendControl.current = null
+      sampleTypeLegend.current = null
     }
   }, [])
 
-  // Update basemap when toggled
-  useEffect(() => {
-    if (!map.current) return
-    map.current.setStyle(buildBasemapStyle(getBasemap(basemap)))
-  }, [basemap])
+  // Markers are DOM overlays, so they survive style swaps and don't need re-adding
+  const changeBasemap = (basemapId: string) => {
+    setBasemap(basemapId)
+    map.current?.setStyle(buildBasemapStyle(getBasemap(basemapId)))
+  }
 
-  // Update markers when data changes
+  const validData = useMemo(
+    () => data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude)),
+    [data],
+  )
+  const legendData = useMemo(() => buildMapLegend(validData), [validData])
+
+  // Sync markers and legend control with the current data
   useEffect(() => {
     if (!map.current) return
 
@@ -72,9 +77,6 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
       // Clear existing markers
       markers.current.forEach((marker) => marker.remove())
       markers.current = []
-
-      // Filter data with valid coordinates
-      const validData = data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude))
 
       if (validData.length === 0) return
 
@@ -143,24 +145,18 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
       }
     }
 
+    legendControl.current?.update(parameter, units, legendData)
+
     // If map is loaded, add markers immediately, otherwise wait for load
     if (map.current.loaded()) {
       addMarkers()
     } else {
       map.current.once('load', addMarkers)
+      return () => {
+        map.current?.off('load', addMarkers)
+      }
     }
-  }, [data, parameter, units])
-
-  // Build legend data using shared hook
-  const validData = data.filter((d) => d.latitude && d.longitude && !isNaN(d.latitude) && !isNaN(d.longitude))
-  const legendData = useMapLegend(validData)
-
-  // Update legend control when data changes
-  useEffect(() => {
-    if (legendControl.current) {
-      legendControl.current.update(parameter, units, legendData)
-    }
-  }, [parameter, units, legendData])
+  }, [validData, parameter, units, legendData])
 
   return (
     <div className="flex flex-col">
@@ -169,7 +165,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
         {/* Basemap toggle (top-right on phones so it clears the attribution) */}
         <BasemapSelector
           activeBasemap={basemap}
-          onBasemapChange={setBasemap}
+          onBasemapChange={changeBasemap}
           className="absolute top-2 right-2 sm:top-auto sm:right-auto sm:bottom-2 sm:left-2 z-10"
         />
 

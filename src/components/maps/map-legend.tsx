@@ -6,7 +6,7 @@ export class LegendControl implements maplibregl.IControl {
   private container: HTMLDivElement | null = null
   private parameter: string = ''
   private units: string = ''
-  private legendData: ReturnType<typeof useMapLegend> = null
+  private legendData: ReturnType<typeof buildMapLegend> = null
 
   onAdd(): HTMLElement {
     this.container = document.createElement('div')
@@ -22,7 +22,7 @@ export class LegendControl implements maplibregl.IControl {
     this.container = null
   }
 
-  update(parameter: string, units: string, legendData: ReturnType<typeof useMapLegend>): void {
+  update(parameter: string, units: string, legendData: ReturnType<typeof buildMapLegend>): void {
     this.parameter = parameter
     this.units = units
     this.legendData = legendData
@@ -86,7 +86,7 @@ export class SampleTypeLegendControl implements maplibregl.IControl {
   }
 }
 
-export function useMapLegend(data: { value: number }[]) {
+export function buildMapLegend(data: { value: number }[]) {
   if (data.length === 0) return null
 
   const values = data.map(d => d.value).filter(v => !isNaN(v))
@@ -167,7 +167,7 @@ export function VerticalLegend({
 }: {
   parameter: string
   units: string
-  legendData: ReturnType<typeof useMapLegend>
+  legendData: ReturnType<typeof buildMapLegend>
 }) {
   if (!legendData) return null
 
@@ -203,7 +203,7 @@ export function HorizontalLegend({
 }: {
   parameter: string
   units: string
-  legendData: ReturnType<typeof useMapLegend>
+  legendData: ReturnType<typeof buildMapLegend>
 }) {
   if (!legendData) return null
 

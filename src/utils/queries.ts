@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import { fetchFromAPI } from './api'
+import { fetchFromAPI, fetchCount, fetchUniqueCount } from './api'
 
 // Shared types
 export interface SiteAttribute {
@@ -131,4 +131,17 @@ export const invertTaxaQueryOptions = queryOptions({
 export const flagsQueryOptions = queryOptions({
   queryKey: ['flags'],
   queryFn: () => fetchFromAPI<FlagRecord>('flags', FLAG_COLUMNS),
+})
+
+// Lightweight record counts for the home page value boxes
+export const dataCountsQueryOptions = queryOptions({
+  queryKey: ['data-counts'],
+  queryFn: async () => {
+    const [water, soil, inverts] = await Promise.all([
+      fetchCount('water'),
+      fetchCount('soil'),
+      fetchUniqueCount('inverts', 'siteid'),
+    ])
+    return { water, soil, inverts }
+  },
 })

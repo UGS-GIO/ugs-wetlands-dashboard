@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import Histogram from '../components/charts/histogram'
 import Boxplot from '../components/charts/boxplot'
@@ -22,6 +22,7 @@ import {
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
 import { signif } from '../utils/format'
+import { pickKey, pickValue, pickGrouping } from '../utils/search'
 import OutlierBanner from '../components/outlier-banner'
 import { transformWaterParams, transformWaterData } from '../utils/transformers'
 import type { WaterData } from '../types'
@@ -107,7 +108,42 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
   },
 }
 
+type Category = keyof typeof CATEGORY_OPTIONS
+
+const firstParameter = (category: Category) => Object.values(PARAMETER_OPTIONS[category])[0]
+
+// Raw URL values; anything unrecognized falls back to the defaults
+interface SearchInput {
+  category?: string
+  parameter?: string
+  grouping?: string
+  showOutliers?: boolean
+}
+
+interface WaterChemistrySearch {
+  category: Category
+  parameter: string
+  grouping: GroupingKey
+  showOutliers: boolean
+}
+
 export const Route = createFileRoute('/water-chemistry')({
+  validateSearch: (search: SearchInput): WaterChemistrySearch => {
+    const category = pickKey(search.category, CATEGORY_OPTIONS) ?? 'genchem'
+    return {
+      category,
+      parameter: pickValue(search.parameter, PARAMETER_OPTIONS[category]) ?? firstParameter(category),
+      grouping: pickGrouping(search.grouping),
+      showOutliers: search.showOutliers === true,
+    }
+  },
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(waterRecordsQueryOptions),
+      queryClient.ensureQueryData(waterParamsQueryOptions),
+      queryClient.ensureQueryData(siteAttributesQueryOptions),
+      queryClient.ensureQueryData(flagsQueryOptions),
+    ]),
   component: WaterChemistry,
 })
 
@@ -123,25 +159,23 @@ function WaterChemistry() {
     return { waterData, waterParams }
   }, [waterRecords, paramsData, sitesData, flagsData])
 
-  const [category, setCategory] = useState<keyof typeof CATEGORY_OPTIONS>('genchem')
-  const [parameter, setParameter] = useState<string>('Electrical Conductivity')
-  const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
+  const { category, parameter, grouping, showOutliers } = Route.useSearch()
+  const navigate = Route.useNavigate()
+  const setSearch = (patch: Partial<WaterChemistrySearch>) =>
+    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, resetScroll: false })
+
   const [downloadGroups, setDownloadGroups] = useState<(keyof typeof DOWNLOAD_GROUP_OPTIONS)[]>(['genchem'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  const [showOutliers, setShowOutliers] = useState(false)
-
-  // Update parameter when category changes
-  useEffect(() => {
-    const firstParam = Object.keys(PARAMETER_OPTIONS[category])[0]
-    setParameter(PARAMETER_OPTIONS[category][firstParam])
-  }, [category])
 
   // Filter data based on selected parameter
-  const filteredData = waterData.filter((d) => d.label === parameter)
+  const filteredData = useMemo(() => waterData.filter((d) => d.label === parameter), [waterData, parameter])
 
   // Count outliers and conditionally filter them
   const outlierCount = filteredData.filter((d) => d.isOutlier).length
-  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
+  const chartData = useMemo(
+    () => (showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)),
+    [filteredData, showOutliers],
+  )
 
   // Get parameter metadata
   const paramMeta = waterParams.find((p) => p.label === parameter)
@@ -209,7 +243,10 @@ function WaterChemistry() {
               <label className="block text-sm font-medium mb-2">Water Quality Category</label>
               <Select
                 value={category}
-                onValueChange={(value) => setCategory(value as keyof typeof CATEGORY_OPTIONS)}
+                onValueChange={(value) => {
+                  const nextCategory = pickKey(value, CATEGORY_OPTIONS) ?? category
+                  setSearch({ category: nextCategory, parameter: firstParameter(nextCategory) })
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -226,7 +263,7 @@ function WaterChemistry() {
 
             <div>
               <label className="block text-sm font-medium mb-2">Parameter</label>
-              <Select value={parameter} onValueChange={setParameter}>
+              <Select value={parameter} onValueChange={(value) => setSearch({ parameter: value })}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -244,7 +281,7 @@ function WaterChemistry() {
               <label className="block text-sm font-medium mb-2">Grouping</label>
               <Select
                 value={grouping}
-                onValueChange={(value) => setGrouping(value as keyof typeof GROUPING_OPTIONS)}
+                onValueChange={(value) => setSearch({ grouping: pickGrouping(value) })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -274,7 +311,7 @@ function WaterChemistry() {
       <OutlierBanner
         outlierCount={outlierCount}
         showOutliers={showOutliers}
-        onToggle={() => setShowOutliers(!showOutliers)}
+        onToggle={() => setSearch({ showOutliers: !showOutliers })}
       />
 
       {/* Map */}
@@ -331,9 +368,10 @@ function WaterChemistry() {
                   <div key={value} className="flex items-center gap-2">
                     <Checkbox
                       id={`download-${value}`}
-                      checked={downloadGroups.includes(value as keyof typeof DOWNLOAD_GROUP_OPTIONS)}
+                      checked={downloadGroups.some((g) => g === value)}
                       onCheckedChange={(checked) => {
-                        const key = value as keyof typeof DOWNLOAD_GROUP_OPTIONS
+                        const key = pickKey(value, DOWNLOAD_GROUP_OPTIONS)
+                        if (!key) return
                         setDownloadGroups(prev =>
                           checked ? [...prev, key] : prev.filter(g => g !== key)
                         )

@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 
-type Theme = 'dark' | 'light' | 'system'
+const THEMES = ['dark', 'light', 'system'] as const
+
+type Theme = (typeof THEMES)[number]
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -20,43 +22,37 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
+// Sync the theme class on <html>; called when the theme is chosen, not after render
+function applyTheme(theme: Theme) {
+  const root = window.document.documentElement
+  root.classList.remove('light', 'dark')
+
+  if (theme === 'system') {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    root.classList.add(systemTheme)
+    return
+  }
+
+  root.classList.add(theme)
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = 'dark',
   storageKey = 'wetlands-ui-theme',
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
-
-  // Load theme from localStorage on client side only
-  useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as Theme
-    if (stored) {
-      setTheme(stored)
-    }
-  }, [storageKey])
-
-  useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.remove('light', 'dark')
-
-    if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
-
-      root.classList.add(systemTheme)
-      return
-    }
-
-    root.classList.add(theme)
-  }, [theme])
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const initialTheme = THEMES.find((t) => t === localStorage.getItem(storageKey)) ?? defaultTheme
+    applyTheme(initialTheme)
+    return initialTheme
+  })
 
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
       localStorage.setItem(storageKey, newTheme)
-      setTheme(newTheme)
+      applyTheme(newTheme)
+      setThemeState(newTheme)
     },
   }
 
