@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import Histogram from '../components/charts/histogram'
 import Boxplot from '../components/charts/boxplot'
@@ -21,6 +21,7 @@ import {
 } from '../utils/queries'
 import { downloadCSV } from '../utils/api'
 import { signif } from '../utils/format'
+import { pickKey, pickValue, pickGrouping } from '../utils/search'
 import OutlierBanner from '../components/outlier-banner'
 import { transformSoilData } from '../utils/transformers'
 import type { SoilData } from '../types'
@@ -97,7 +98,44 @@ const CATEGORY_DESCRIPTIONS: Record<string, { title: string; content: string }> 
   },
 }
 
+type Category = keyof typeof CATEGORY_OPTIONS
+
+const firstParameter = (category: Category) => Object.values(PARAMETER_OPTIONS[category])[0]
+
+// Raw URL values; anything unrecognized falls back to the defaults
+interface SearchInput {
+  category?: string
+  parameter?: string
+  grouping?: string
+  showOutliers?: boolean
+  showFlagged?: boolean
+}
+
+interface SoilChemistrySearch {
+  category: Category
+  parameter: string
+  grouping: GroupingKey
+  showOutliers: boolean
+  showFlagged: boolean
+}
+
 export const Route = createFileRoute('/soil-chemistry')({
+  validateSearch: (search: SearchInput): SoilChemistrySearch => {
+    const category = pickKey(search.category, CATEGORY_OPTIONS) ?? 'gennuts'
+    return {
+      category,
+      parameter: pickValue(search.parameter, PARAMETER_OPTIONS[category]) ?? firstParameter(category),
+      grouping: pickGrouping(search.grouping),
+      showOutliers: search.showOutliers === true,
+      showFlagged: search.showFlagged === true,
+    }
+  },
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(soilRecordsQueryOptions),
+      queryClient.ensureQueryData(soilParamsQueryOptions),
+      queryClient.ensureQueryData(siteAttributesQueryOptions),
+    ]),
   component: SoilChemistry,
 })
 
@@ -111,19 +149,13 @@ function SoilChemistry() {
     [soilRecords, soilParams, sitesData]
   )
 
-  const [category, setCategory] = useState<keyof typeof CATEGORY_OPTIONS>('gennuts')
-  const [parameter, setParameter] = useState<string>('nh4n_s')
-  const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
+  const { category, parameter, grouping, showOutliers, showFlagged } = Route.useSearch()
+  const navigate = Route.useNavigate()
+  const setSearch = (patch: Partial<SoilChemistrySearch>) =>
+    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, resetScroll: false })
+
   const [downloadGroups, setDownloadGroups] = useState<(keyof typeof DOWNLOAD_GROUP_OPTIONS)[]>(['gennuts'])
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  const [showOutliers, setShowOutliers] = useState(false)
-  const [showFlagged, setShowFlagged] = useState(false)
-
-  // Update parameter when category changes
-  useEffect(() => {
-    const firstParam = Object.values(PARAMETER_OPTIONS[category])[0]
-    setParameter(firstParam)
-  }, [category])
 
   // Check if current parameter is nitrate (has flagged values)
   const isNitrateParam = ['no3n_s', 'no3n_e'].includes(parameter)
@@ -131,11 +163,17 @@ function SoilChemistry() {
 
   // Filter data based on selected parameter (by parameter code)
   // Exclude flagged values unless showFlagged is true
-  const filteredData = soilData.filter((d) => d.parameter === parameter && (showFlagged || !d.flag))
+  const filteredData = useMemo(
+    () => soilData.filter((d) => d.parameter === parameter && (showFlagged || !d.flag)),
+    [soilData, parameter, showFlagged],
+  )
 
   // Count outliers and conditionally filter them
   const outlierCount = filteredData.filter((d) => d.isOutlier).length
-  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
+  const chartData = useMemo(
+    () => (showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)),
+    [filteredData, showOutliers],
+  )
 
   // Get parameter metadata
   const paramMeta = soilParams.find((p) => p.parameter === parameter)
@@ -187,7 +225,10 @@ function SoilChemistry() {
               <label className="block text-sm font-medium mb-2">Soil Category</label>
               <Select
                 value={category}
-                onValueChange={(value) => setCategory(value as keyof typeof CATEGORY_OPTIONS)}
+                onValueChange={(value) => {
+                  const nextCategory = pickKey(value, CATEGORY_OPTIONS) ?? category
+                  setSearch({ category: nextCategory, parameter: firstParameter(nextCategory) })
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -204,7 +245,7 @@ function SoilChemistry() {
 
             <div>
               <label className="block text-sm font-medium mb-2">Parameter</label>
-              <Select value={parameter} onValueChange={setParameter}>
+              <Select value={parameter} onValueChange={(value) => setSearch({ parameter: value })}>
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -221,7 +262,7 @@ function SoilChemistry() {
                   <Checkbox
                     id="show-negative"
                     checked={showFlagged}
-                    onCheckedChange={(checked) => setShowFlagged(checked === true)}
+                    onCheckedChange={(checked) => setSearch({ showFlagged: checked === true })}
                   />
                   <label htmlFor="show-negative" className="text-xs text-muted-foreground cursor-pointer">
                     Show {flaggedCount} negative value{flaggedCount !== 1 ? 's' : ''}
@@ -234,7 +275,7 @@ function SoilChemistry() {
               <label className="block text-sm font-medium mb-2">Grouping</label>
               <Select
                 value={grouping}
-                onValueChange={(value) => setGrouping(value as keyof typeof GROUPING_OPTIONS)}
+                onValueChange={(value) => setSearch({ grouping: pickGrouping(value) })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -263,7 +304,7 @@ function SoilChemistry() {
       <OutlierBanner
         outlierCount={outlierCount}
         showOutliers={showOutliers}
-        onToggle={() => setShowOutliers(!showOutliers)}
+        onToggle={() => setSearch({ showOutliers: !showOutliers })}
       />
 
       {/* Map */}
@@ -306,9 +347,10 @@ function SoilChemistry() {
                   <div key={value} className="flex items-center gap-2">
                     <Checkbox
                       id={`soil-download-${value}`}
-                      checked={downloadGroups.includes(value as keyof typeof DOWNLOAD_GROUP_OPTIONS)}
+                      checked={downloadGroups.some((g) => g === value)}
                       onCheckedChange={(checked) => {
-                        const key = value as keyof typeof DOWNLOAD_GROUP_OPTIONS
+                        const key = pickKey(value, DOWNLOAD_GROUP_OPTIONS)
+                        if (!key) return
                         setDownloadGroups(prev =>
                           checked ? [...prev, key] : prev.filter(g => g !== key)
                         )
@@ -337,7 +379,7 @@ function SoilChemistry() {
         onClose={() => setShowDisclaimer(false)}
         onAccept={() => {
           setShowDisclaimer(false)
-          const downloadData = soilData.filter((d) => downloadGroups.includes(d.category as keyof typeof DOWNLOAD_GROUP_OPTIONS))
+          const downloadData = soilData.filter((d) => downloadGroups.some((g) => g === d.category))
           const headers = ['siteid', 'parameter', 'value', 'units', 'flag', 'definition', 'method', 'mdl', 'category', 'Watershed', 'ecoregion', 'Wetland Type', 'huc_name', 'project', 'date', 'name', 'latitude', 'longitude']
           downloadCSV(downloadData, `soil-chemistry-${downloadGroups.join('-')}.csv`, headers, (row, key) => {
             switch (key) {

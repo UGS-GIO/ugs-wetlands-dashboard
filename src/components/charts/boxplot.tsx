@@ -33,9 +33,8 @@ interface BoxplotProps {
 
 export default function Boxplot({ data, groupBy, parameter, units, hlineValue }: BoxplotProps) {
   const svgRef = useRef<SVGSVGElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
-  const containerWidth = useContainerWidth(containerRef)
+  const [containerRef, containerWidth] = useContainerWidth<HTMLDivElement>()
   const [tooltip, setTooltip] = useState<{
     visible: boolean
     x: number
@@ -44,7 +43,7 @@ export default function Boxplot({ data, groupBy, parameter, units, hlineValue }:
   }>({ visible: false, x: 0, y: 0, content: '' })
 
   useEffect(() => {
-    if (!svgRef.current || !containerRef.current || data.length === 0 || containerWidth === 0) return
+    if (!svgRef.current || data.length === 0 || containerWidth === 0) return
 
     // Get theme-aware colors based on current theme
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)

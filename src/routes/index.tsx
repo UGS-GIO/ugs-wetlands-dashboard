@@ -1,42 +1,14 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
-import { fetchCount, fetchUniqueCount } from '../utils/api'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { dataCountsQueryOptions } from '../utils/queries'
 
 export const Route = createFileRoute('/')({
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(dataCountsQueryOptions),
   component: Home,
 })
 
-interface DataCounts {
-  water: number
-  soil: number
-  inverts: number
-}
-
 function Home() {
-  const [counts, setCounts] = useState<DataCounts>({ water: 0, soil: 0, inverts: 0 })
-
-  useEffect(() => {
-    const loadCounts = async () => {
-      try {
-        // Use lightweight count queries instead of fetching all data
-        const [waterCount, soilCount, invertsCount] = await Promise.all([
-          fetchCount('water'),
-          fetchCount('soil'),
-          fetchUniqueCount('inverts', 'siteid'),
-        ])
-
-        setCounts({
-          water: waterCount,
-          soil: soilCount,
-          inverts: invertsCount,
-        })
-      } catch (error) {
-        console.error('Error loading data:', error)
-      }
-    }
-
-    loadCounts()
-  }, [])
+  const { data: counts } = useSuspenseQuery(dataCountsQueryOptions)
 
   return (
     <div className="px-4 md:px-8 pt-2">

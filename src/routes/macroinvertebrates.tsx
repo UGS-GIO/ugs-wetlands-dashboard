@@ -20,6 +20,7 @@ import {
   siteAttributesQueryOptions,
   flagsQueryOptions,
 } from '../utils/queries'
+import { pickKey, pickGrouping } from '../utils/search'
 import { downloadCSV } from '../utils/api'
 import { signif } from '../utils/format'
 import OutlierBanner from '../components/outlier-banner'
@@ -57,7 +58,41 @@ const COMMUNITY_DESCRIPTIONS: Record<string, string> = {
   arthropod: `<strong>Arthropods</strong> -- the class of macroinvertebrates with hard exoskeletons -- are among the most diverse animal groups in the world and wetland arthropod communities are no exception.`,
 }
 
+type Parameter = keyof typeof PARAMETER_OPTIONS
+type CommunityParam = keyof typeof COMMUNITY_OPTIONS
+
+// Raw URL values; anything unrecognized falls back to the defaults
+interface SearchInput {
+  parameter?: string
+  grouping?: string
+  communityParam?: string
+  communityGrouping?: string
+  showOutliers?: boolean
+}
+
+interface MacroinvertebratesSearch {
+  parameter: Parameter
+  grouping: GroupingKey
+  communityParam: CommunityParam
+  communityGrouping: GroupingKey
+  showOutliers: boolean
+}
+
 export const Route = createFileRoute('/macroinvertebrates')({
+  validateSearch: (search: SearchInput): MacroinvertebratesSearch => ({
+    parameter: pickKey(search.parameter, PARAMETER_OPTIONS) ?? 'abundance',
+    grouping: pickGrouping(search.grouping),
+    communityParam: pickKey(search.communityParam, COMMUNITY_OPTIONS) ?? 'feed_grp',
+    communityGrouping: pickGrouping(search.communityGrouping),
+    showOutliers: search.showOutliers === true,
+  }),
+  loader: ({ context: { queryClient } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(invertRecordsQueryOptions),
+      queryClient.ensureQueryData(invertTaxaQueryOptions),
+      queryClient.ensureQueryData(siteAttributesQueryOptions),
+      queryClient.ensureQueryData(flagsQueryOptions),
+    ]),
   component: Macroinvertebrates,
 })
 
@@ -72,22 +107,26 @@ function Macroinvertebrates() {
     [invertsData, taxonData, sitesData, flagsData]
   )
 
-  const [parameter, setParameter] = useState<keyof typeof PARAMETER_OPTIONS>('abundance')
-  const [grouping, setGrouping] = useState<GroupingKey>('Watershed')
-  const [communityParam, setCommunityParam] = useState<keyof typeof COMMUNITY_OPTIONS>('feed_grp')
-  const [communityGrouping, setCommunityGrouping] = useState<GroupingKey>('Watershed')
+  const { parameter, grouping, communityParam, communityGrouping, showOutliers } = Route.useSearch()
+  const navigate = Route.useNavigate()
+  const setSearch = (patch: Partial<MacroinvertebratesSearch>) =>
+    navigate({ search: (prev) => ({ ...prev, ...patch }), replace: true, resetScroll: false })
+
   const [showDisclaimer, setShowDisclaimer] = useState(false)
-  const [showOutliers, setShowOutliers] = useState(false)
 
-  // Filter data based on selected parameter
-  const filteredData = invertMetrics.filter((d) => d.parameter === parameter)
-
-  // Count outliers and conditionally filter them
-  const outlierCount = filteredData.filter((d) => d.isOutlier).length
-  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
+  // Filter data based on selected parameter and outlier toggle
+  const { outlierCount, chartData } = useMemo(() => {
+    const filtered = invertMetrics.filter((d) => d.parameter === parameter)
+    const count = filtered.filter((d) => d.isOutlier).length
+    const chart = showOutliers ? filtered : filtered.filter((d) => !d.isOutlier)
+    return { outlierCount: count, chartData: chart }
+  }, [invertMetrics, parameter, showOutliers])
 
   // Filter community data
-  const filteredCommunityData = communityData.filter((d) => d.parameter === communityParam)
+  const filteredCommunityData = useMemo(
+    () => communityData.filter((d) => d.parameter === communityParam),
+    [communityData, communityParam],
+  )
 
   const description = PARAMETER_DESCRIPTIONS[parameter]
 
@@ -128,7 +167,7 @@ function Macroinvertebrates() {
               <label className="block text-sm font-medium mb-2">Macroinvertebrate Metric</label>
               <Select
                 value={parameter}
-                onValueChange={(value) => setParameter(value as keyof typeof PARAMETER_OPTIONS)}
+                onValueChange={(value) => setSearch({ parameter: pickKey(value, PARAMETER_OPTIONS) ?? parameter })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -147,7 +186,7 @@ function Macroinvertebrates() {
               <label className="block text-sm font-medium mb-2">Grouping</label>
               <Select
                 value={grouping}
-                onValueChange={(value) => setGrouping(value as keyof typeof GROUPING_OPTIONS)}
+                onValueChange={(value) => setSearch({ grouping: pickGrouping(value) })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -176,7 +215,7 @@ function Macroinvertebrates() {
       <OutlierBanner
         outlierCount={outlierCount}
         showOutliers={showOutliers}
-        onToggle={() => setShowOutliers(!showOutliers)}
+        onToggle={() => setSearch({ showOutliers: !showOutliers })}
       />
 
       {/* Map */}
@@ -250,7 +289,7 @@ function Macroinvertebrates() {
               <label className="block text-sm font-medium mb-2">Community Metrics</label>
               <Select
                 value={communityParam}
-                onValueChange={(value) => setCommunityParam(value as keyof typeof COMMUNITY_OPTIONS)}
+                onValueChange={(value) => setSearch({ communityParam: pickKey(value, COMMUNITY_OPTIONS) ?? communityParam })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
@@ -269,7 +308,7 @@ function Macroinvertebrates() {
               <label className="block text-sm font-medium mb-2">Grouping</label>
               <Select
                 value={communityGrouping}
-                onValueChange={(value) => setCommunityGrouping(value as keyof typeof GROUPING_OPTIONS)}
+                onValueChange={(value) => setSearch({ communityGrouping: pickGrouping(value) })}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue />
