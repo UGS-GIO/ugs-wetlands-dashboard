@@ -146,16 +146,7 @@ export default function WaterMap({ data, parameter, units }: WaterMapProps) {
     }
 
     legendControl.current?.update(parameter, units, legendData)
-
-    // If map is loaded, add markers immediately, otherwise wait for load
-    if (map.current.loaded()) {
-      addMarkers()
-    } else {
-      map.current.once('load', addMarkers)
-      return () => {
-        map.current?.off('load', addMarkers)
-      }
-    }
+    addMarkers()
   }, [validData, parameter, units, legendData])
 
   return (

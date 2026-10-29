@@ -109,15 +109,7 @@ export default function SoilMap({ data, parameter, units }: SoilMapProps) {
     }
 
     legendControl.current?.update(parameter, units, legendData)
-
-    if (map.current.loaded()) {
-      addMarkers()
-    } else {
-      map.current.once('load', addMarkers)
-      return () => {
-        map.current?.off('load', addMarkers)
-      }
-    }
+    addMarkers()
   }, [validData, parameter, units, legendData])
 
   return (

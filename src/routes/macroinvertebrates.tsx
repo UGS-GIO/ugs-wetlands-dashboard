@@ -114,15 +114,19 @@ function Macroinvertebrates() {
 
   const [showDisclaimer, setShowDisclaimer] = useState(false)
 
-  // Filter data based on selected parameter
-  const filteredData = invertMetrics.filter((d) => d.parameter === parameter)
-
-  // Count outliers and conditionally filter them
-  const outlierCount = filteredData.filter((d) => d.isOutlier).length
-  const chartData = showOutliers ? filteredData : filteredData.filter((d) => !d.isOutlier)
+  // Filter data based on selected parameter and outlier toggle
+  const { outlierCount, chartData } = useMemo(() => {
+    const filtered = invertMetrics.filter((d) => d.parameter === parameter)
+    const count = filtered.filter((d) => d.isOutlier).length
+    const chart = showOutliers ? filtered : filtered.filter((d) => !d.isOutlier)
+    return { outlierCount: count, chartData: chart }
+  }, [invertMetrics, parameter, showOutliers])
 
   // Filter community data
-  const filteredCommunityData = communityData.filter((d) => d.parameter === communityParam)
+  const filteredCommunityData = useMemo(
+    () => communityData.filter((d) => d.parameter === communityParam),
+    [communityData, communityParam],
+  )
 
   const description = PARAMETER_DESCRIPTIONS[parameter]
 
