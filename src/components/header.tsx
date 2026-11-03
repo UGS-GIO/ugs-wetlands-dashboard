@@ -7,16 +7,12 @@ import { Button } from './ui/button'
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-  type NavLinkItem =
-    | { to: string; label: string; href?: never }
-    | { href: string; label: string; to?: never }
-
-  const navLinks: NavLinkItem[] = [
+  const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/water-chemistry', label: 'Water Chemistry' },
     { to: '/soil-chemistry', label: 'Soil Chemistry' },
     { to: '/macroinvertebrates', label: 'Macroinvertebrates' },
-    { href: 'https://maps.geology.utah.gov/wetlands', label: 'Wetlands Map' },
+    { to: '/wetlands-map', label: 'Wetlands Map' },
   ]
 
   return (
@@ -34,26 +30,16 @@ export default function Header() {
         {/* Desktop Navigation */}
         <div className="hidden lg:flex items-center gap-4">
           <nav className="flex gap-0">
-            {navLinks.map((link) =>
-              link.href ? (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="block px-4 py-1 text-foreground no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-gray-400"
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="block px-4 py-1 text-foreground no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-gray-400 [&.active]:border-primary"
-                  activeOptions={{ exact: link.to === '/' }}
-                >
-                  {link.label}
-                </Link>
-              ),
-            )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="block px-4 py-1 text-foreground no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-gray-400 [&.active]:border-primary"
+                activeOptions={{ exact: link.to === '/' }}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
           <ThemeSwitch />
         </div>
@@ -77,28 +63,17 @@ export default function Header() {
       {mobileMenuOpen && (
         <nav className="lg:hidden mt-3 pb-2 border-t border-border pt-3">
           <div className="flex flex-col gap-1">
-            {navLinks.map((link) =>
-              link.href ? (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="block px-4 py-3 text-foreground no-underline rounded-lg transition-all duration-200 text-base hover:bg-gray-400/20"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className="block px-4 py-3 text-foreground no-underline rounded-lg transition-all duration-200 text-base hover:bg-gray-400/20 [&.active]:bg-primary/20 [&.active]:border-l-4 [&.active]:border-primary"
-                  activeOptions={{ exact: link.to === '/' }}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              ),
-            )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="block px-4 py-3 text-foreground no-underline rounded-lg transition-all duration-200 text-base hover:bg-gray-400/20 [&.active]:bg-primary/20 [&.active]:border-l-4 [&.active]:border-primary"
+                activeOptions={{ exact: link.to === '/' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </nav>
       )}
