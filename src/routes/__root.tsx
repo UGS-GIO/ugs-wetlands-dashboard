@@ -1,4 +1,4 @@
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet, useRouterState } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { QueryClient } from '@tanstack/react-query'
 
@@ -17,14 +17,17 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootLayout() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isMapRoute = pathname.startsWith('/wetlands-map')
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="wetlands-ui-theme">
-      <div className="flex flex-col min-h-screen">
+      <div className={`flex flex-col ${isMapRoute ? 'h-screen overflow-hidden' : 'min-h-screen'}`}>
         <Header />
-        <main className="flex-1">
+        <main className={`flex-1 ${isMapRoute ? 'min-h-0' : ''}`}>
           <Outlet />
         </main>
-        <Footer />
+        {!isMapRoute && <Footer />}
       </div>
       <TanStackRouterDevtools position="bottom-right" />
     </ThemeProvider>

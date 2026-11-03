@@ -12,6 +12,7 @@ export default function Header() {
     { to: '/water-chemistry', label: 'Water Chemistry' },
     { to: '/soil-chemistry', label: 'Soil Chemistry' },
     { to: '/macroinvertebrates', label: 'Macroinvertebrates' },
+    { to: '/wetlands-map', label: 'Plants Map' },
   ]
 
   return (
