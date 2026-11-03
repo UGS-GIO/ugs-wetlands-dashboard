@@ -39,8 +39,6 @@ export default function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="block px-4 py-1 text-foreground no-underline border-b-2 border-transparent transition-all duration-200 text-base text-center hover:border-gray-400"
                 >
                   {link.label}
@@ -84,8 +82,6 @@ export default function Header() {
                 <a
                   key={link.href}
                   href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="block px-4 py-3 text-foreground no-underline rounded-lg transition-all duration-200 text-base hover:bg-gray-400/20"
                   onClick={() => setMobileMenuOpen(false)}
                 >
