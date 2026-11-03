@@ -1,19 +1,23 @@
 name: Deploy to Firebase Hosting on PR Preview
 
-on: pull_request
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
 
 permissions:
+  contents: read
   checks: write
   pull-requests: write
 
 jobs:
   build_and_preview:
-    # Only run on PRs from the same repository, not external forks
-    if: '${{ github.event.pull_request.head.repo.full_name == github.repository }}'
+    if: github.event.pull_request.head.repo.full_name == github.repository || contains(fromJSON('["MEMBER", "OWNER", "COLLABORATOR"]'), github.event.pull_request.author_association)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,4 +39,4 @@ jobs:
           projectId: 'ut-dnr-ugs-wtlnds-dataxplr-dev'
           target: main-site
           channelId: pr-${{ github.event.number }}
-          expires: 7d
+          expires: 14d
