@@ -35,4 +35,4 @@ jobs:
           projectId: 'ut-dnr-ugs-wtlnds-dataxplr-dev'
           target: main-site
           channelId: pr-${{ github.event.number }}
-          expires: 7d
+          expires: 14d
